@@ -1,2 +1,3 @@
 # undomanager
-Generic undo/redo manager for R
+
+General framework to track the history of any object, allowing undo and redo operations.

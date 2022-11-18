@@ -1,0 +1,21 @@
+Package: undomanager
+Title: Manage the History of Any Objects with Undo/Redo Operations
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Dean", "Attali",
+        email = "daattali@gmail.com",
+        role = c("aut", "cre"),
+        comment = c(ORCID="0000-0002-5645-3493")
+    ))
+Description: General framework to track the history of any object, allowing
+    undo and redo operations.
+URL: https://github.com/daattali/undomanager
+BugReports: https://github.com/daattali/undomanager/issues
+Depends:
+    R (>= 3.0.0)
+Imports:
+    R6
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
