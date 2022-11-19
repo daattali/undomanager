@@ -165,3 +165,11 @@ UndoManager <- R6::R6Class(
   )
 )
 
+#' Undo/Redo manager
+#'
+#' With the undo manager, you can manage the history of an object by
+#' using undo and redo operations.\cr\cr
+#' This function is equivalent to calling `UndoManager$new()`
+undomanager <- function(type = NULL) {
+  UndoManager$new(type = type)
+}
