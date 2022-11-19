@@ -72,51 +72,53 @@ UndoManager <- R6::R6Class(
     #' @examples
     #' TODO
     print = function() {
+
+      if (is.null(private$.current)) {
+        cat("Empty ")
+      }
+
       cat("<UndoManager>")
       if (is.null(private$.type)) {
         cat(" of arbitrary items")
       } else {
         cat0(" of items of type ", paste0("<", private$.type, ">", collapse = "|"))
       }
-      cat0(" with ")
-      cat0(self$undo_size, if(self$undo_size == 1) " undo" else " undos", " and ")
-      cat0(self$redo_size, if(self$redo_size == 1) " redo" else " redos", "\n")
 
-      cat("\n#############")
-      cat("\nCurrent item: ")
-      if (is.atomic(private$.current)) {
-        cat(private$.current, "\n")
-      } else {
-        cat("\n")
-        print(private$.current)
-      }
+      if (!is.null(private$.current)) {
+        cat0(" with ")
+        cat0(self$undo_size, if(self$undo_size == 1) " undo" else " undos", " and ")
+        cat0(self$redo_size, if(self$redo_size == 1) " redo" else " redos", "\n")
 
-      if (self$undo_size > 0) {
-        cat("\n###########")
-        cat("\nUndo stack:\n")
-        for (idx in seq_len(self$undo_size)) {
-          idx_rev <- (self$undo_size - idx + 1)
-          cat0(idx, ". ")
-          if (is.atomic(private$.undo_stack[[idx_rev]])) {
-            cat(private$.undo_stack[[idx_rev]], "\n")
-          } else {
-            cat("\n")
-            print(private$.undo_stack[[idx_rev]])
+        cat("\n### Current item ###\n")
+        if (is.atomic(private$.current)) {
+          cat(private$.current, "\n")
+        } else {
+          print(private$.current)
+        }
+
+        if (self$undo_size > 0) {
+          cat("\n### Undo stack ###\n")
+          for (idx in seq_len(self$undo_size)) {
+            idx_rev <- (self$undo_size - idx + 1)
+            cat0(idx, ". ")
+            if (is.atomic(private$.undo_stack[[idx_rev]])) {
+              cat(private$.undo_stack[[idx_rev]], "\n")
+            } else {
+              print(private$.undo_stack[[idx_rev]])
+            }
           }
         }
-      }
 
-      if (self$redo_size > 0) {
-        cat("\n###########")
-        cat("\nRedo stack:\n")
-        for (idx in seq_len(self$redo_size)) {
-          idx_rev <- (self$redo_size - idx + 1)
-          cat0(idx, ". ")
-          if (is.atomic(private$.redo_stack[[idx_rev]])) {
-            cat(private$.redo_stack[[idx_rev]], "\n")
-          } else {
-            cat("\n")
-            print(private$.redo_stack[[idx_rev]])
+        if (self$redo_size > 0) {
+          cat("\n### Redo stack ###\n")
+          for (idx in seq_len(self$redo_size)) {
+            idx_rev <- (self$redo_size - idx + 1)
+            cat0(idx, ". ")
+            if (is.atomic(private$.redo_stack[[idx_rev]])) {
+              cat(private$.redo_stack[[idx_rev]], "\n")
+            } else {
+              print(private$.redo_stack[[idx_rev]])
+            }
           }
         }
       }
