@@ -41,11 +41,17 @@ UndoManager <- R6::R6Class(
 
     #' @description
     #' TODO
-    #' @param type The class of the object (`NULL` to allow any object)
+    #' @param type The permitted classes of the objects (`NULL` to allow any object)
     #' @examples
     #' TODO
     #' @return TODO
     initialize = function(type = NULL) {
+      if (!is.null(type) &&
+          !checkmate::test_character(type, any.missing = FALSE, unique = TRUE,
+                                     min.chars = 1, names = "unnamed")) {
+        stop("UndoManager: `type` must either be `NULL` or an unnamed vector of strings",
+             call. = FALSE)
+      }
       private$.type <- type
       invisible(self)
     },
@@ -60,7 +66,7 @@ UndoManager <- R6::R6Class(
       if (is.null(private$.type)) {
         cat(" of arbitrary items")
       } else {
-        cat0(" of items of type <", private$.type, ">")
+        cat0(" of items of type ", paste0("<", private$.type, ">", collapse = "|"))
       }
       cat0(" with ")
       cat0(self$undo_size, if(self$undo_size == 1) " undo" else " undos", " and ")
@@ -149,7 +155,9 @@ UndoManager <- R6::R6Class(
         stop("do: item must not be NULL", call. = FALSE)
       }
       if (!is.null(private$.type) && !inherits(item, private$.type)) {
-        stop("do: The provided item must have class '", private$.type, "'", call. = FALSE)
+        stop("do: The provided item must have class ",
+             paste0("<", private$.type, ">", collapse = "|"),
+             call. = FALSE)
       }
 
       if (is.null(private$.current)) {
