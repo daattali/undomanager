@@ -1,15 +1,24 @@
+#' Undo/Redo manager
+#'
+#' @description
+#' With the undo manager, you can manage the history of an object by
+#' using undo and redo operations.
+#'
+#' @field value Get the value
+#' @field undo_size Get the number of undo operations
+#' @field redo_size Get the number of redo operations
+#' @examples
+#' TODO
 #' @export
 UndoManager <- R6::R6Class(
   "UndoManager",
-  cloneable = FALSE,
+  cloneable = TRUE,
 
   private = list(
-
-    .type = NULL,   # class of the objects (can be NULL to allow any object)
+    .type = NULL,
     .undo_stack = list(),
     .redo_stack = list(),
     .current = NULL
-
   ),
 
   active = list(
@@ -30,11 +39,22 @@ UndoManager <- R6::R6Class(
 
   public = list(
 
+    #' @description
+    #' TODO
+    #' @param type The class of the object (`NULL` to allow any object)
+    #' @examples
+    #' TODO
+    #' @return TODO
     initialize = function(type = NULL) {
       private$.type <- type
       invisible(self)
     },
 
+    #' @description
+    #' TODO
+    #' @param type The class of the object (`NULL` to allow any object)
+    #' @examples
+    #' TODO
     print = function() {
       cat("<UndoManager>")
       if (is.null(private$.type)) {
@@ -86,6 +106,12 @@ UndoManager <- R6::R6Class(
       }
     },
 
+    #' @description
+    #' TODO
+    #' @param type The class of the object (`NULL` to allow any object)
+    #' @examples
+    #' TODO
+    #' @return TODO
     undo = function() {
       if (self$undo_size < 1) {
         stop("undo: There is nothing to undo", call. = FALSE)
@@ -96,6 +122,12 @@ UndoManager <- R6::R6Class(
       invisible(self)
     },
 
+    #' @description
+    #' TODO
+    #' @param type The class of the object (`NULL` to allow any object)
+    #' @examples
+    #' TODO
+    #' @return TODO
     redo = function() {
       if (self$redo_size < 1) {
         stop("redo: There is nothing to redo", call. = FALSE)
@@ -106,6 +138,12 @@ UndoManager <- R6::R6Class(
       invisible(self)
     },
 
+    #' @description
+    #' TODO
+    #' @param type The class of the object (`NULL` to allow any object)
+    #' @examples
+    #' TODO
+    #' @return TODO
     add = function(item) {
       if (is.null(item)) {
         stop("add: item must not be NULL", call. = FALSE)
