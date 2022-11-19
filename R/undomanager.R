@@ -5,6 +5,8 @@
 #' using undo and redo operations.
 #'
 #' @field value Get the value
+#' @field can_undo Whether there are any undo operations available
+#' @field can_redo Whether there are any redo operations available
 #' @field undo_size Get the number of undo operations
 #' @field redo_size Get the number of redo operations
 #' @examples
@@ -33,6 +35,14 @@ UndoManager <- R6::R6Class(
 
     redo_size = function() {
       length(private$.redo_stack)
+    },
+
+    can_undo = function() {
+      self$undo_size > 0
+    },
+
+    can_redo = function() {
+      self$redo_size > 0
     }
 
   ),
