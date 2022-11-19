@@ -26,6 +26,14 @@ test_that("UndoManager with a type rejects different objects", {
   expect_error(UndoManager$new("character")$do("a")$do(a))
 })
 
+test_that("UndoManager with multiple types", {
+  expect_error(UndoManager$new(c("character", "numeric"))$do(1), NA)
+  expect_error(UndoManager$new(c("character", "numeric"))$do("a"), NA)
+  expect_error(UndoManager$new(c("character", "numeric"))$do("a")$do(1), NA)
+  expect_error(UndoManager$new(c("character", "numeric"))$do("a")$do(1)$do(1L))
+  expect_error(UndoManager$new(c("character", "integer", "numeric"))$do("a")$do(1)$do(1L), NA)
+})
+
 test_that("UndoManager do works", {
   expect_identical(UndoManager$new()$do(5)$value, 5)
   expect_identical(UndoManager$new()$do(5)$undo_size, 0L)
