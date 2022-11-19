@@ -178,6 +178,21 @@ UndoManager <- R6::R6Class(
       private$.current <- item
       private$.redo_stack <- list()
       invisible(self)
+    },
+
+    clear = function(clear_value = FALSE) {
+      if (!checkmate::check_logical(clear_value, any.missing = FALSE, len = 1, null.ok = FALSE)) {
+        stop("clear: `clear_value` must be either `TRUE` or `FALSE`.", call. = FALSE)
+      }
+
+      private$.undo_stack <- list()
+      private$.redo_stack <- list()
+
+      if (clear_value) {
+        private$.current <- NULL
+      }
+
+      invisible(self)
     }
 
   )

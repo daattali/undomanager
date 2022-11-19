@@ -34,6 +34,23 @@ test_that("UndoManager with multiple types", {
   expect_error(UndoManager$new(c("character", "integer", "numeric"))$do("a")$do(1)$do(1L), NA)
 })
 
+test_that("UndoManager clear works", {
+  expect_identical(
+    UndoManager$new()$clear(),
+    UndoManager$new()
+  )
+
+  expect_identical(
+    UndoManager$new()$do(1)$do(2)$do(3)$do(4)$clear(),
+    UndoManager$new()$do(4)
+  )
+
+  expect_identical(
+    UndoManager$new()$do(1)$do(2)$do(3)$do(4)$clear(clear_value = TRUE),
+    UndoManager$new()
+  )
+})
+
 test_that("UndoManager can_undo and can_redo", {
   expect_false(UndoManager$new()$can_undo)
   expect_false(UndoManager$new()$do(1)$can_undo)
