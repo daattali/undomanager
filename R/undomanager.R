@@ -144,12 +144,12 @@ UndoManager <- R6::R6Class(
     #' @examples
     #' TODO
     #' @return TODO
-    add = function(item) {
+    do = function(item) {
       if (is.null(item)) {
-        stop("add: item must not be NULL", call. = FALSE)
+        stop("do: item must not be NULL", call. = FALSE)
       }
       if (!is.null(private$.type) && !inherits(item, private$.type)) {
-        stop("add: The provided item must have class '", private$.type, "'", call. = FALSE)
+        stop("do: The provided item must have class '", private$.type, "'", call. = FALSE)
       }
 
       if (is.null(private$.current)) {
@@ -164,3 +164,4 @@ UndoManager <- R6::R6Class(
 
   )
 )
+

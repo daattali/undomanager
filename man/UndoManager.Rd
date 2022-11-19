@@ -4,22 +4,41 @@
 \alias{UndoManager}
 \title{Undo/Redo manager}
 \description{
-Undo/Redo manager
-
-Undo/Redo manager
-}
-\details{
 With the undo manager, you can manage the history of an object by
 using undo and redo operations.
 }
 \examples{
-aa <- 5
+TODO
 
 ## ------------------------------------------------
 ## Method `UndoManager$new`
 ## ------------------------------------------------
 
-g <- 5
+TODO
+
+## ------------------------------------------------
+## Method `UndoManager$print`
+## ------------------------------------------------
+
+TODO
+
+## ------------------------------------------------
+## Method `UndoManager$undo`
+## ------------------------------------------------
+
+TODO
+
+## ------------------------------------------------
+## Method `UndoManager$redo`
+## ------------------------------------------------
+
+TODO
+
+## ------------------------------------------------
+## Method `UndoManager$do`
+## ------------------------------------------------
+
+TODO
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -39,7 +58,7 @@ g <- 5
 \item \href{#method-UndoManager-print}{\code{UndoManager$print()}}
 \item \href{#method-UndoManager-undo}{\code{UndoManager$undo()}}
 \item \href{#method-UndoManager-redo}{\code{UndoManager$redo()}}
-\item \href{#method-UndoManager-add}{\code{UndoManager$add()}}
+\item \href{#method-UndoManager-do}{\code{UndoManager$do()}}
 \item \href{#method-UndoManager-clone}{\code{UndoManager$clone()}}
 }
 }
@@ -64,7 +83,7 @@ TODO
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{g <- 5
+\preformatted{TODO
 }
 \if{html}{\out{</div>}}
 
@@ -75,8 +94,24 @@ TODO
 \if{html}{\out{<a id="method-UndoManager-print"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-print}{}}}
 \subsection{Method \code{print()}}{
+TODO
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{UndoManager$print()}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{The class of the object (\code{NULL} to allow any object)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{TODO
+}
+\if{html}{\out{</div>}}
+
 }
 
 }
@@ -84,8 +119,27 @@ TODO
 \if{html}{\out{<a id="method-UndoManager-undo"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-undo}{}}}
 \subsection{Method \code{undo()}}{
+TODO
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{UndoManager$undo()}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{The class of the object (\code{NULL} to allow any object)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+TODO
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{TODO
+}
+\if{html}{\out{</div>}}
+
 }
 
 }
@@ -93,17 +147,55 @@ TODO
 \if{html}{\out{<a id="method-UndoManager-redo"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-redo}{}}}
 \subsection{Method \code{redo()}}{
+TODO
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{UndoManager$redo()}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{The class of the object (\code{NULL} to allow any object)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+TODO
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{TODO
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-UndoManager-add"></a>}}
-\if{latex}{\out{\hypertarget{method-UndoManager-add}{}}}
-\subsection{Method \code{add()}}{
+\if{html}{\out{<a id="method-UndoManager-do"></a>}}
+\if{latex}{\out{\hypertarget{method-UndoManager-do}{}}}
+\subsection{Method \code{do()}}{
+TODO
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{UndoManager$add(item)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{UndoManager$do(item)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{The class of the object (\code{NULL} to allow any object)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+TODO
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{TODO
+}
+\if{html}{\out{</div>}}
+
 }
 
 }
