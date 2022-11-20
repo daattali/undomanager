@@ -20,7 +20,16 @@ UndoManager <- R6::R6Class(
     .type = NULL,
     .undo_stack = list(),
     .redo_stack = list(),
-    .current = NULL
+    .current = NULL,
+
+    .rx_dep = NULL,
+    .rx_expr = NULL,
+    .rx_count = 0,
+    .invalidate = function() {
+      private$.rx_count <- private$.rx_count + 1
+      private$.rx_dep(private$.rx_count)
+      invisible()
+    }
   ),
 
   active = list(
@@ -63,7 +72,21 @@ UndoManager <- R6::R6Class(
              call. = FALSE)
       }
       private$.type <- type
+      private$.rx_dep <- function(x) NULL
       invisible(self)
+    },
+
+    reactive = function() {
+      # Idea borrowed from Winston Chang
+      # https://community.rstudio.com/t/good-way-to-create-a-reactive-aware-r6-class
+      if (is.null(private$.rx_expr)) {
+        private$.rx_dep <- shiny::reactiveVal(0)
+        private$.rx_expr <- shiny::reactive({
+          private$.rx_dep()
+          self
+        })
+      }
+      private$.rx_expr
     },
 
     #' @description
@@ -137,6 +160,9 @@ UndoManager <- R6::R6Class(
       private$.redo_stack <- append(private$.redo_stack, private$.current)
       private$.current <- tail(private$.undo_stack, 1)[[1]]
       private$.undo_stack <- head(private$.undo_stack, -1)
+
+      private$.invalidate()
+
       invisible(self)
     },
 
@@ -153,6 +179,9 @@ UndoManager <- R6::R6Class(
       private$.undo_stack <- append(private$.undo_stack, private$.current)
       private$.current <- tail(private$.redo_stack, 1)[[1]]
       private$.redo_stack <- head(private$.redo_stack, -1)
+
+      private$.invalidate()
+
       invisible(self)
     },
 
@@ -179,6 +208,9 @@ UndoManager <- R6::R6Class(
       }
       private$.current <- item
       private$.redo_stack <- list()
+
+      private$.invalidate()
+
       invisible(self)
     },
 
@@ -193,6 +225,8 @@ UndoManager <- R6::R6Class(
       if (clear_value) {
         private$.current <- NULL
       }
+
+      private$.invalidate()
 
       invisible(self)
     }
