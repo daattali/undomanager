@@ -33,7 +33,7 @@ print(nums)
 You can also chain all the operations; the above is equivalent to:
 
 ```r
-UndoManager$new("numeric")$do(5)$do(7)$do(10)$do(12)$undo()$undo()$redo())
+UndoManager$new("numeric")$do(5)$do(7)$do(10)$do(12)$undo()$undo()$redo()
 ```
 
 ### Using with shiny
