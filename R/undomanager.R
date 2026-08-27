@@ -215,7 +215,7 @@ UndoManager <- R6::R6Class(
     },
 
     clear = function(clear_value = FALSE) {
-      if (!checkmate::check_logical(clear_value, any.missing = FALSE, len = 1, null.ok = FALSE)) {
+      if (!checkmate::test_logical(clear_value, any.missing = FALSE, len = 1, null.ok = FALSE)) {
         stop("clear: `clear_value` must be either `TRUE` or `FALSE`.", call. = FALSE)
       }
 
