@@ -152,8 +152,8 @@ UndoManager <- R6::R6Class(
         stop("undo: There is nothing to undo", call. = FALSE)
       }
       private$.redo_stack <- append(private$.redo_stack, list(private$.current))
-      private$.current <- tail(private$.undo_stack, 1)[[1]]
-      private$.undo_stack <- head(private$.undo_stack, -1)
+      private$.current <- utils::tail(private$.undo_stack, 1)[[1]]
+      private$.undo_stack <- utils::head(private$.undo_stack, -1)
 
       private$.invalidate()
 
@@ -171,8 +171,8 @@ UndoManager <- R6::R6Class(
         stop("redo: There is nothing to redo", call. = FALSE)
       }
       private$.undo_stack <- append(private$.undo_stack, list(private$.current))
-      private$.current <- tail(private$.redo_stack, 1)[[1]]
-      private$.redo_stack <- head(private$.redo_stack, -1)
+      private$.current <- utils::tail(private$.redo_stack, 1)[[1]]
+      private$.redo_stack <- utils::head(private$.redo_stack, -1)
 
       private$.invalidate()
 
