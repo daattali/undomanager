@@ -113,22 +113,15 @@ UndoManager <- R6::R6Class(
         cat0(self$redo_size, if(self$redo_size == 1) " redo" else " redos", "\n")
 
         cat("\n### Current item ###\n")
-        if (is.atomic(private$.current)) {
-          cat(private$.current, "\n")
-        } else {
-          print(private$.current)
-        }
+        print(private$.current)
 
         if (self$undo_size > 0) {
           cat("\n### Undo stack ###\n")
           for (idx in seq_len(self$undo_size)) {
             idx_rev <- (self$undo_size - idx + 1)
-            cat0(idx, ". ")
-            if (is.atomic(private$.undo_stack[[idx_rev]])) {
-              cat(private$.undo_stack[[idx_rev]], "\n")
-            } else {
-              print(private$.undo_stack[[idx_rev]])
-            }
+            cat0(idx, ".\n")
+            print(private$.undo_stack[[idx_rev]])
+            cat("\n")
           }
         }
 
@@ -136,12 +129,9 @@ UndoManager <- R6::R6Class(
           cat("\n### Redo stack ###\n")
           for (idx in seq_len(self$redo_size)) {
             idx_rev <- (self$redo_size - idx + 1)
-            cat0(idx, ". ")
-            if (is.atomic(private$.redo_stack[[idx_rev]])) {
-              cat(private$.redo_stack[[idx_rev]], "\n")
-            } else {
-              print(private$.redo_stack[[idx_rev]])
-            }
+            cat0(idx, ".\n")
+            print(private$.redo_stack[[idx_rev]])
+            cat("\n")
           }
         }
       }
@@ -157,7 +147,7 @@ UndoManager <- R6::R6Class(
       if (self$undo_size < 1) {
         stop("undo: There is nothing to undo", call. = FALSE)
       }
-      private$.redo_stack <- append(private$.redo_stack, private$.current)
+      private$.redo_stack <- append(private$.redo_stack, list(private$.current))
       private$.current <- tail(private$.undo_stack, 1)[[1]]
       private$.undo_stack <- head(private$.undo_stack, -1)
 
@@ -176,7 +166,7 @@ UndoManager <- R6::R6Class(
       if (self$redo_size < 1) {
         stop("redo: There is nothing to redo", call. = FALSE)
       }
-      private$.undo_stack <- append(private$.undo_stack, private$.current)
+      private$.undo_stack <- append(private$.undo_stack, list(private$.current))
       private$.current <- tail(private$.redo_stack, 1)[[1]]
       private$.redo_stack <- head(private$.redo_stack, -1)
 
@@ -204,7 +194,7 @@ UndoManager <- R6::R6Class(
       if (is.null(private$.current)) {
         private$.undo_stack <- list()
       } else {
-        private$.undo_stack <- append(private$.undo_stack, private$.current)
+        private$.undo_stack <- append(private$.undo_stack, list(private$.current))
       }
       private$.current <- item
       private$.redo_stack <- list()
