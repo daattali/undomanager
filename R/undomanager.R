@@ -107,7 +107,9 @@ UndoManager <- R6::R6Class(
         cat0(" of items of type ", paste0("<", private$.type, ">", collapse = "|"))
       }
 
-      if (!is.null(private$.current)) {
+      if (is.null(private$.current)) {
+        cat("\n")
+      } else {
         cat0(" with ")
         cat0(self$undo_size, if(self$undo_size == 1) " undo" else " undos", " and ")
         cat0(self$redo_size, if(self$redo_size == 1) " redo" else " redos", "\n")
