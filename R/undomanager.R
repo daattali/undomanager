@@ -143,17 +143,31 @@ UndoManager <- R6::R6Class(
 
     #' @description
     #' TODO
-    #' @param type The class of the object (`NULL` to allow any object)
+    #' @param n The number of undo operations to perform. If `n` is larger
+    #' than the number of available undo operations, all of them are
+    #' performed. Use `Inf` to undo the entire history.
     #' @examples
     #' TODO
     #' @return TODO
-    undo = function() {
-      if (self$undo_size < 1) {
+    undo = function(n = 1) {
+      if (!checkmate::test_number(n, lower = 0, na.ok = FALSE) ||
+          (is.finite(n) && n != floor(n))) {
+        stop("undo: `n` must be a single non-negative whole number, or `Inf`",
+             call. = FALSE)
+      }
+
+      n <- as.integer(min(n, self$undo_size))
+      if (n < 1L) {
         return(invisible(self))
       }
-      private$.redo_stack <- append(private$.redo_stack, list(private$.current))
-      private$.current <- utils::tail(private$.undo_stack, 1)[[1]]
-      private$.undo_stack <- utils::head(private$.undo_stack, -1)
+      len <- length(private$.undo_stack)
+      private$.redo_stack <- c(
+        private$.redo_stack,
+        list(private$.current),
+        rev(private$.undo_stack[seq.int(to = len, length.out = n - 1L)])
+      )
+      private$.current <- private$.undo_stack[[len - n + 1L]]
+      private$.undo_stack <- private$.undo_stack[seq_len(len - n)]
 
       private$.invalidate()
 
@@ -162,17 +176,32 @@ UndoManager <- R6::R6Class(
 
     #' @description
     #' TODO
-    #' @param type The class of the object (`NULL` to allow any object)
+    #' @param n The number of redo operations to perform. If `n` is larger
+    #' than the number of available redo operations, all of them are
+    #' performed. Use `Inf` to redo the entire history.
     #' @examples
     #' TODO
     #' @return TODO
-    redo = function() {
-      if (self$redo_size < 1) {
+    redo = function(n = 1) {
+      if (!checkmate::test_number(n, lower = 0, na.ok = FALSE) ||
+          (is.finite(n) && n != floor(n))) {
+        stop("redo: `n` must be a single non-negative whole number, or `Inf`",
+             call. = FALSE)
+      }
+
+      n <- as.integer(min(n, self$redo_size))
+      if (n < 1L) {
         return(invisible(self))
       }
-      private$.undo_stack <- append(private$.undo_stack, list(private$.current))
-      private$.current <- utils::tail(private$.redo_stack, 1)[[1]]
-      private$.redo_stack <- utils::head(private$.redo_stack, -1)
+      len <- length(private$.redo_stack)
+
+      private$.undo_stack <- c(
+        private$.undo_stack,
+        list(private$.current),
+        rev(private$.redo_stack[seq.int(to = len, length.out = n - 1L)])
+      )
+      private$.current <- private$.redo_stack[[len - n + 1L]]
+      private$.redo_stack <- private$.redo_stack[seq_len(len - n)]
 
       private$.invalidate()
 
