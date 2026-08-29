@@ -137,6 +137,8 @@ UndoManager <- R6::R6Class(
           }
         }
       }
+
+      invisible(self)
     },
 
     #' @description
