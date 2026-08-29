@@ -94,7 +94,7 @@ UndoManager <- R6::R6Class(
     #' @param type The class of the object (`NULL` to allow any object)
     #' @examples
     #' TODO
-    print = function() {
+    print = function(...) {
 
       if (is.null(private$.current)) {
         cat("Empty ")
