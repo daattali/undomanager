@@ -149,7 +149,7 @@ UndoManager <- R6::R6Class(
     #' @return TODO
     undo = function() {
       if (self$undo_size < 1) {
-        stop("undo: There is nothing to undo", call. = FALSE)
+        return(invisible(self))
       }
       private$.redo_stack <- append(private$.redo_stack, list(private$.current))
       private$.current <- utils::tail(private$.undo_stack, 1)[[1]]
@@ -168,7 +168,7 @@ UndoManager <- R6::R6Class(
     #' @return TODO
     redo = function() {
       if (self$redo_size < 1) {
-        stop("redo: There is nothing to redo", call. = FALSE)
+        return(invisible(self))
       }
       private$.undo_stack <- append(private$.undo_stack, list(private$.current))
       private$.current <- utils::tail(private$.redo_stack, 1)[[1]]

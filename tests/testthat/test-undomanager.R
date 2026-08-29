@@ -83,22 +83,75 @@ test_that("UndoManager do works", {
   expect_identical(UndoManager$new()$do(5)$do(7)$do(3)$do(8)$do(1)$redo_size, 0L)
 })
 
-test_that("UndoManager can't undo/redo past the beginning/end", {
-  expect_error(UndoManager$new()$undo())
-  expect_error(UndoManager$new()$redo())
+test_that("UndoManager undo/redo past the beginning/end is a silent no-op", {
+  expect_error(UndoManager$new()$undo(), NA)
+  expect_error(UndoManager$new()$redo(), NA)
 
-  expect_error(UndoManager$new()$do(1)$undo())
-  expect_error(UndoManager$new()$do(1)$redo())
+  expect_error(UndoManager$new()$do(1)$undo(), NA)
+  expect_error(UndoManager$new()$do(1)$redo(), NA)
 
   expect_error(UndoManager$new()$do(1)$do(2)$undo(), NA)
-  expect_error(UndoManager$new()$do(1)$do(2)$undo()$undo())
-  expect_error(UndoManager$new()$do(1)$do(2)$redo())
+  expect_error(UndoManager$new()$do(1)$do(2)$undo()$undo(), NA)
+  expect_error(UndoManager$new()$do(1)$do(2)$redo(), NA)
   expect_error(UndoManager$new()$do(1)$do(2)$undo()$redo(), NA)
-  expect_error(UndoManager$new()$do(1)$do(2)$undo()$redo()$redo())
+  expect_error(UndoManager$new()$do(1)$do(2)$undo()$redo()$redo(), NA)
 
   expect_error(UndoManager$new()$do(1)$do(2)$do(3)$undo(), NA)
   expect_error(UndoManager$new()$do(1)$do(2)$do(3)$undo()$undo(), NA)
-  expect_error(UndoManager$new()$do(1)$do(2)$do(3)$undo()$undo()$undo())
+  expect_error(UndoManager$new()$do(1)$do(2)$do(3)$undo()$undo()$undo(), NA)
+})
+
+test_that("UndoManager no-op undo/redo leaves the state untouched", {
+  expect_identical(UndoManager$new()$undo(), UndoManager$new())
+  expect_identical(UndoManager$new()$redo(), UndoManager$new())
+
+  expect_identical(UndoManager$new()$do(1)$undo(), UndoManager$new()$do(1))
+  expect_identical(UndoManager$new()$do(1)$redo(), UndoManager$new()$do(1))
+
+  expect_identical(
+    UndoManager$new()$do(1)$do(2)$do(3)$undo()$undo()$undo()$undo(),
+    UndoManager$new()$do(1)$do(2)$do(3)$undo()$undo()
+  )
+
+  expect_identical(
+    UndoManager$new()$do(1)$do(2)$do(3)$undo()$redo()$redo(),
+    UndoManager$new()$do(1)$do(2)$do(3)
+  )
+})
+
+test_that("UndoManager undo/redo still return self when they are a no-op", {
+  expect_identical(UndoManager$new()$undo()$do(1)$value, 1)
+  expect_identical(UndoManager$new()$do(1)$redo()$do(2)$value, 2)
+  expect_identical(UndoManager$new()$do(1)$do(2)$undo()$undo()$redo()$value, 2)
+})
+
+test_that("UndoManager no-op undo/redo does not trigger a reactive update", {
+  count <- function(x) x$.__enclos_env__$private$.rx_count
+
+  x <- UndoManager$new()
+  x$undo()
+  x$redo()
+  expect_identical(count(x), 0)
+  x$do(1)
+  expect_identical(count(x), 1)
+  x$undo()
+  x$redo()
+  expect_identical(count(x), 1)
+  x$do(2)
+  expect_identical(count(x), 2)
+  x$redo()
+  expect_identical(count(x), 2)
+  x$undo()
+  expect_identical(count(x), 3)
+  x$undo()
+  expect_identical(count(x), 3)
+  x$redo()
+  expect_identical(count(x), 4)
+  x$redo()
+  expect_identical(count(x), 4)
+  x$redo()
+  expect_identical(count(x), 4)
+
 })
 
 undoredo_test <- function() {
