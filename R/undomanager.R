@@ -67,7 +67,7 @@ UndoManager <- R6::R6Class(
     initialize = function(type = NULL) {
       if (!is.null(type) &&
           !checkmate::test_character(type, any.missing = FALSE, unique = TRUE,
-                                     min.chars = 1, names = "unnamed")) {
+                                     min.chars = 1, min.len = 1, names = "unnamed")) {
         stop("UndoManager: `type` must either be `NULL` or an unnamed vector of strings",
              call. = FALSE)
       }
