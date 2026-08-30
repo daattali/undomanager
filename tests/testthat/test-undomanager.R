@@ -33,10 +33,37 @@ test_that("UndoManager with a type accepts that object", {
 })
 
 test_that("UndoManager with a type rejects different objects", {
-  expect_error(UndoManager$new("character")$do(1))
-  expect_error(UndoManager$new("numeric")$do("a"))
-  expect_error(UndoManager$new("numeric")$do(1)$do("a"))
-  expect_error(UndoManager$new("character")$do("a")$do(a))
+  expect_error(UndoManager$new("character")$do(1), "must have class")
+  expect_error(UndoManager$new("numeric")$do("a"), "must have class")
+  expect_error(UndoManager$new("numeric")$do(1)$do("a"), "must have class")
+  expect_error(UndoManager$new("character")$do("a")$do(1), "must have class")
+})
+
+test_that("UndoManager type rejects objects of other classes", {
+  expect_error(UndoManager$new("factor")$do("a"), "must have class")
+  expect_error(UndoManager$new("Date")$do(1), "must have class")
+  expect_error(UndoManager$new("character")$do(factor("a")), "must have class")
+  expect_error(UndoManager$new("list")$do(data.frame(a = 1)), "must have class")
+  expect_error(UndoManager$new("data.frame")$do(matrix(1, 1)), "must have class")
+  expect_error(UndoManager$new("integer")$do("a"), "must have class")
+  expect_error(UndoManager$new("logical")$do(1), "must have class")
+  expect_error(UndoManager$new("matrix")$do(1), "must have class")
+  expect_error(UndoManager$new("character")$do(TRUE), "must have class")
+})
+
+test_that("UndoManager is left untouched when do() rejects an item", {
+  x <- UndoManager$new("numeric")$do(1)$do(2)
+
+  expect_error(x$do("nope"), "must have class")
+  expect_identical(x$value, 2)
+  expect_identical(x$undo_size, 1L)
+  expect_identical(x$redo_size, 0L)
+  expect_identical(count(x), 2)
+
+  expect_error(x$do(NULL), "must not be NULL")
+  expect_identical(x$value, 2)
+  expect_identical(x$undo_size, 1L)
+  expect_identical(count(x), 2)
 })
 
 test_that("UndoManager with multiple types", {
@@ -45,6 +72,10 @@ test_that("UndoManager with multiple types", {
   expect_error(UndoManager$new(c("character", "numeric"))$do("a")$do(1), NA)
   expect_error(UndoManager$new(c("character", "numeric"))$do("a")$do(1)$do(1L), NA)
   expect_error(UndoManager$new(c("character", "integer", "numeric"))$do("a")$do(1)$do(1L), NA)
+
+  expect_error(UndoManager$new(c("character", "numeric"))$do(TRUE), "must have class")
+  expect_error(UndoManager$new(c("character", "numeric"))$do(factor("a")), "must have class")
+  expect_error(UndoManager$new(c("character", "numeric"))$do("a")$do(list(1)), "must have class")
 })
 
 test_that("UndoManager type matches the classes S3 dispatch would use", {
@@ -60,15 +91,16 @@ test_that("UndoManager type matches the classes S3 dispatch would use", {
   expect_error(UndoManager$new("double")$do(1), NA)
   expect_error(UndoManager$new("double")$do(matrix(1.5, 1)), NA)
   expect_error(UndoManager$new("integer")$do(matrix(1L, 1)), NA)
-  expect_error(UndoManager$new("double")$do(1L))
+  expect_error(UndoManager$new("double")$do(1L), "must have class")
 
-  expect_error(UndoManager$new("numeric")$do("a"))
-  expect_error(UndoManager$new("numeric")$do(TRUE))
-  expect_error(UndoManager$new("numeric")$do(factor("a")))
-  expect_error(UndoManager$new("numeric")$do(Sys.Date()))
-  expect_error(UndoManager$new("numeric")$do(data.frame(a = 1)))
-  expect_error(UndoManager$new("numeric")$do(list(1)))
-  expect_error(UndoManager$new("integer")$do(1.5))
+  expect_error(UndoManager$new("numeric")$do("a"), "must have class")
+  expect_error(UndoManager$new("numeric")$do(TRUE), "must have class")
+  expect_error(UndoManager$new("numeric")$do(factor("a")), "must have class")
+  expect_error(UndoManager$new("numeric")$do(Sys.Date()), "must have class")
+  expect_error(UndoManager$new("numeric")$do(data.frame(a = 1)), "must have class")
+  expect_error(UndoManager$new("numeric")$do(list(1)), "must have class")
+  expect_error(UndoManager$new("numeric")$do(1.5), NA)
+  expect_error(UndoManager$new("integer")$do(1.5), "must have class")
 })
 
 test_that("UndoManager clear works", {
@@ -464,8 +496,8 @@ test_that("UndoManager type restriction works for non-scalar classes", {
   expect_error(UndoManager$new("matrix")$do(matrix(1:4, 2)), NA)
   expect_error(UndoManager$new("factor")$do(factor("a")), NA)
   expect_error(UndoManager$new("Date")$do(as.Date("2024-01-15")), NA)
-  expect_error(UndoManager$new("list")$do(1))
-  expect_error(UndoManager$new("data.frame")$do(list(1)))
+  expect_error(UndoManager$new("list")$do(1), "must have class")
+  expect_error(UndoManager$new("data.frame")$do(list(1)), "must have class")
 })
 
 test_that("UndoManager active bindings cannot be assigned to", {
