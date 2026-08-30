@@ -524,3 +524,50 @@ test_that("UndoManager stores reference objects by reference", {
   env$foo <- "after"
   expect_identical(x$undo()$value$foo, "after")
 })
+
+test_that("all.equal ignores how a manager reached its state", {
+  expect_true(isTRUE(all.equal(
+    UndoManager$new()$do(1)$clear(),
+    UndoManager$new()$do(1)
+  )))
+  expect_true(isTRUE(all.equal(
+    UndoManager$new()$do(1)$do(2)$undo()$do(9),
+    UndoManager$new()$do(1)$do(9)
+  )))
+  expect_true(isTRUE(all.equal(UndoManager$new(), UndoManager$new())))
+  expect_true(isTRUE(all.equal(
+    UndoManager$new()$do(1)$do(2),
+    UndoManager$new()$do(1)$do(2)
+  )))
+})
+
+test_that("all.equal compares the value, the history and the type", {
+  expect_false(isTRUE(all.equal(UndoManager$new()$do(1), UndoManager$new()$do(2))))
+  expect_false(isTRUE(all.equal(
+    UndoManager$new()$do(1)$do(2)$undo(),
+    UndoManager$new()$do(1)$do(7)$undo()
+  )))
+
+  expect_false(isTRUE(all.equal(UndoManager$new()$do(1)$do(2), UndoManager$new()$do(2))))
+  expect_false(isTRUE(all.equal(
+    UndoManager$new()$do(1)$do(2)$do(3),
+    UndoManager$new()$do(1)$do(2)$do(3)$undo()
+  )))
+
+  expect_false(isTRUE(all.equal(UndoManager$new("numeric")$do(1), UndoManager$new()$do(1))))
+  expect_false(isTRUE(all.equal(UndoManager$new(), UndoManager$new()$do(1))))
+})
+
+test_that("all.equal rejects a non-UndoManager", {
+  expect_false(isTRUE(all.equal(UndoManager$new(), list())))
+  expect_match(all.equal(UndoManager$new(), list()), "not an", fixed = TRUE)
+})
+
+test_that("identical() still tells separate managers apart", {
+  a <- UndoManager$new()$do(1)
+  b <- UndoManager$new()$do(1)
+
+  expect_true(all.equal(a, b))
+  expect_false(identical(a, b))
+  expect_true(identical(a, a))
+})

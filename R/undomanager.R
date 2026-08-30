@@ -256,3 +256,37 @@ UndoManager <- R6::R6Class(
 
   )
 )
+
+#' Compare two UndoManager objects
+#'
+#' Two managers are equal when they hold the same value, the same undo and redo
+#' history, and the same `type` restriction. Internal bookkeeping, such as the
+#' counter used to trigger shiny reactivity, is ignored, so two managers that
+#' reached the same state by different routes compare as equal.
+#'
+#' Note that [identical()] cannot be used to compare managers: R6 objects are
+#' environments, so `identical()` always reports two separate managers as
+#' different regardless of their contents.
+#'
+#' @param target,current The two `UndoManager` objects to compare.
+#' @param ... Passed on to [all.equal()].
+#' @return `TRUE` if the two managers are equal, otherwise a character vector
+#' describing the differences.
+#' @method all.equal UndoManager
+#' @export
+all.equal.UndoManager <- function(target, current, ...) {
+  if (!inherits(current, "UndoManager")) {
+    return("`current` is not an <UndoManager>")
+  }
+  all.equal(state(target), state(current), ...)
+}
+
+state <- function(x) {
+  p <- x$.__enclos_env__$private
+  list(
+    type = p$.type,
+    value = p$.current,
+    undo_stack = p$.undo_stack,
+    redo_stack = p$.redo_stack
+  )
+}
