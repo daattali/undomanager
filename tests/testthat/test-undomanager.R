@@ -11,10 +11,61 @@ undoredo_rewound <- function() {
 # as a proxy for how many times reactivity in shiny is triggered
 count <- function(x) x$.__enclos_env__$private$.rx_count
 
-test_that("UndoManager cannot do NULL items", {
-  expect_error(UndoManager$new()$do(NULL))
+test_that("UndoManager can store NULL items", {
+  expect_error(UndoManager$new()$do(NULL), NA)
+  expect_error(UndoManager$new()$do(1)$do(NULL), NA)
   expect_error(UndoManager$new()$do(1)$do(2), NA)
-  expect_error(UndoManager$new()$do(1)$do(2)$do(NULL))
+
+  expect_null(UndoManager$new()$do(NULL)$value)
+  expect_null(UndoManager$new()$do(1)$do(NULL)$value)
+  expect_identical(UndoManager$new()$do(1)$do(NULL)$undo_size, 1L)
+  expect_false(UndoManager$new()$do(NULL)$can_undo)
+
+  expect_identical(UndoManager$new()$do(1)$do(NULL)$undo()$value, 1)
+  expect_null(UndoManager$new()$do(1)$do(NULL)$undo()$redo()$value)
+  expect_null(UndoManager$new()$do(1)$do(NULL)$do(3)$undo()$value)
+  expect_identical(UndoManager$new()$do(1)$do(NULL)$do(3)$undo(2)$value, 1)
+  expect_identical(UndoManager$new()$do(NULL)$do(2)$undo_size, 1L)
+  expect_identical(UndoManager$new()$do(NULL)$do(NULL)$undo_size, 1L)
+})
+
+test_that("UndoManager NULL needs allow_null when a type is given", {
+  expect_error(UndoManager$new("numeric")$do(NULL), "must not be NULL")
+  expect_error(UndoManager$new("numeric", allow_null = TRUE)$do(NULL), NA)
+  expect_error(UndoManager$new("numeric", allow_null = TRUE)$do(5), NA)
+  expect_error(UndoManager$new("numeric", allow_null = TRUE)$do("a"), "must have class")
+
+  expect_error(UndoManager$new()$do(NULL), NA)
+  expect_error(UndoManager$new(allow_null = FALSE)$do(NULL), NA)
+
+  m <- UndoManager$new("numeric", allow_null = TRUE)$do(5)$do(NULL)$do(10)
+  expect_identical(m$value, 10)
+  expect_null(m$undo()$value)
+  expect_identical(m$undo()$undo()$value, 5)
+})
+
+test_that("UndoManager rejects \"NULL\" as a type", {
+  expect_error(UndoManager$new("NULL"), "cannot include")
+  expect_error(UndoManager$new(c("numeric", "NULL")), "cannot include")
+  expect_error(UndoManager$new("NULL"), "allow_null")
+})
+
+test_that("UndoManager validates allow_null", {
+  expect_error(UndoManager$new("numeric", allow_null = "yes"), "allow_null")
+  expect_error(UndoManager$new("numeric", allow_null = NA), "allow_null")
+  expect_error(UndoManager$new("numeric", allow_null = NULL), "allow_null")
+  expect_error(UndoManager$new("numeric", allow_null = c(TRUE, TRUE)), "allow_null")
+})
+
+test_that("UndoManager allow_null counts towards equality", {
+  expect_false(isTRUE(all.equal(
+    UndoManager$new("numeric", allow_null = TRUE)$do(1),
+    UndoManager$new("numeric")$do(1)
+  )))
+})
+
+test_that("An empty UndoManager is not the same as one holding NULL", {
+  expect_false(isTRUE(all.equal(UndoManager$new(), UndoManager$new()$do(NULL))))
 })
 
 test_that("UndoManager with no type accepts any object", {
@@ -511,8 +562,30 @@ test_that("UndoManager active bindings cannot be assigned to", {
 })
 
 test_that("UndoManager do requires an item", {
-  expect_error(UndoManager$new()$do())
-  expect_error(UndoManager$new()$do(1)$do())
+  expect_error(UndoManager$new()$do(), "must be provided")
+  expect_error(UndoManager$new()$do(1)$do(), "must be provided")
+  expect_error(UndoManager$new("numeric")$do(), "must be provided")
+})
+
+test_that("UndoManager is untouched when do() cannot evaluate its item", {
+  x <- UndoManager$new()$do(1)$do(2)
+  expect_error(x$do())
+  expect_identical(x$value, 2)
+  expect_identical(x$undo_size, 1L)
+  expect_identical(x$redo_size, 0L)
+  expect_error(print(x), NA)
+
+  y <- UndoManager$new()$do(1)$do(2)
+  expect_error(y$do(stop("boom")))
+  expect_identical(y$value, 2)
+  expect_identical(y$undo_size, 1L)
+  expect_identical(y$redo_size, 0L)
+
+  z <- UndoManager$new()$do(1)$do(2)
+  expect_error(z$do(no_such_variable))
+  expect_identical(z$value, 2)
+  expect_identical(z$undo_size, 1L)
+  expect_identical(z$redo_size, 0L)
 })
 
 test_that("UndoManager stores reference objects by reference", {
@@ -570,4 +643,49 @@ test_that("identical() still tells separate managers apart", {
   expect_true(all.equal(a, b))
   expect_false(identical(a, b))
   expect_true(identical(a, a))
+})
+
+test_that("UndoManager is_empty distinguishes an empty manager from a NULL value", {
+  expect_true(UndoManager$new()$is_empty)
+  expect_false(UndoManager$new()$do(NULL)$is_empty)
+  expect_null(UndoManager$new()$value)
+  expect_null(UndoManager$new()$do(NULL)$value)
+
+  expect_false(UndoManager$new()$do(1)$is_empty)
+  expect_false(UndoManager$new()$do(1)$do(2)$undo()$is_empty)
+  expect_false(UndoManager$new()$do(1)$clear()$is_empty)
+
+  expect_true(UndoManager$new()$do(1)$clear(clear_value = TRUE)$is_empty)
+  expect_true(UndoManager$new()$undo()$is_empty)
+  expect_false(UndoManager$new()$do(1)$clear(clear_value = TRUE)$do(NULL)$is_empty)
+})
+
+test_that("UndoManager is_empty is read-only", {
+  x <- UndoManager$new()
+  expect_error(x$is_empty <- TRUE)
+})
+
+test_that("UndoManager instances do not share state", {
+  a <- UndoManager$new()
+  b <- UndoManager$new()
+
+  a$do(1)$do(2)
+  expect_true(b$is_empty)
+  expect_null(b$value)
+  expect_identical(b$undo_size, 0L)
+
+  b$do("x")
+  expect_identical(a$value, 2)
+  expect_identical(a$undo_size, 1L)
+  expect_identical(b$value, "x")
+  expect_identical(b$undo_size, 0L)
+
+  a$undo()
+  expect_identical(a$value, 1)
+  expect_identical(b$value, "x")
+})
+
+test_that("UndoManager print shows NULL items", {
+  expect_snapshot(print(UndoManager$new()$do(NULL)))
+  expect_snapshot(print(UndoManager$new()$do(1)$do(NULL)$do(3)$undo()))
 })

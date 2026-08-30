@@ -45,6 +45,8 @@ TODO
   \describe{
     \item{\code{value}}{Get the value}
 
+    \item{\code{is_empty}}{Whether the manager holds no value at all}
+
     \item{\code{can_undo}}{Whether there are any undo operations available}
 
     \item{\code{can_redo}}{Whether there are any redo operations available}
@@ -74,13 +76,15 @@ TODO
   TODO
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{UndoManager$new(type = NULL)}
+    \preformatted{UndoManager$new(type = NULL, allow_null = FALSE)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{type}}{The permitted classes of the objects (\code{NULL} to allow any object)}
+      \item{\code{allow_null}}{Whether \code{NULL} values are allowed. Only used when
+\code{type} is given; an untyped manager always accepts any object including \code{NULL}.}
     }
     \if{html}{\out{</div>}}
   }

@@ -5,6 +5,7 @@
 #' using undo and redo operations.
 #'
 #' @field value Get the value
+#' @field is_empty Whether the manager holds no value at all
 #' @field can_undo Whether there are any undo operations available
 #' @field can_redo Whether there are any redo operations available
 #' @field undo_size Get the number of undo operations
@@ -18,6 +19,7 @@ UndoManager <- R6::R6Class(
 
   private = list(
     .type = NULL,
+    .allow_null = FALSE,
 
     # The history is a single list plus a cursor. `.pos` is the index of the
     # current item, or 0 when the manager is empty. Everything before the
@@ -40,7 +42,11 @@ UndoManager <- R6::R6Class(
   active = list(
 
     value = function() {
-      if (private$.pos == 0L) NULL else private$.store$history[[private$.pos]]
+      if (self$is_empty) NULL else private$.store$history[[private$.pos]]
+    },
+
+    is_empty = function() {
+      private$.pos == 0L
     },
 
     undo_size = function() {
@@ -48,7 +54,7 @@ UndoManager <- R6::R6Class(
     },
 
     redo_size = function() {
-      if (private$.pos == 0L) 0L else length(private$.store$history) - private$.pos
+      if (self$is_empty) 0L else length(private$.store$history) - private$.pos
     },
 
     can_undo = function() {
@@ -66,17 +72,27 @@ UndoManager <- R6::R6Class(
     #' @description
     #' TODO
     #' @param type The permitted classes of the objects (`NULL` to allow any object)
+    #' @param allow_null Whether `NULL` values are allowed. Only used when
+    #' `type` is given; an untyped manager always accepts any object including `NULL`.
     #' @examples
     #' TODO
     #' @return TODO
-    initialize = function(type = NULL) {
+    initialize = function(type = NULL, allow_null = FALSE) {
       if (!is.null(type) &&
           !checkmate::test_character(type, any.missing = FALSE, unique = TRUE,
                                      min.chars = 1, min.len = 1, names = "unnamed")) {
         stop("UndoManager: `type` must either be `NULL` or an unnamed vector of strings",
              call. = FALSE)
       }
+      if (!is.null(type) && "NULL" %in% type) {
+        stop("UndoManager: `type` cannot include \"NULL\"; use `allow_null = TRUE` instead",
+             call. = FALSE)
+      }
+      if (!checkmate::test_logical(allow_null, any.missing = FALSE, len = 1, null.ok = FALSE)) {
+        stop("UndoManager: `allow_null` must be either `TRUE` or `FALSE`.", call. = FALSE)
+      }
       private$.type <- type
+      private$.allow_null <- allow_null
       private$.store <- new.env(parent = emptyenv())
       private$.store$history <- list()
       private$.rx_dep <- function(x) NULL
@@ -103,7 +119,7 @@ UndoManager <- R6::R6Class(
     #' TODO
     print = function(...) {
 
-      if (private$.pos == 0L) {
+      if (self$is_empty) {
         cat("Empty ")
       }
 
@@ -114,7 +130,7 @@ UndoManager <- R6::R6Class(
         cat0(" of items of type ", paste0("<", private$.type, ">", collapse = "|"))
       }
 
-      if (private$.pos == 0L) {
+      if (self$is_empty) {
         cat("\n")
       } else {
         cat0(" with ")
@@ -205,17 +221,29 @@ UndoManager <- R6::R6Class(
     #' TODO
     #' @return TODO
     do = function(item) {
-      if (is.null(item)) {
-        stop("do: item must not be NULL", call. = FALSE)
+      if (missing(item)) {
+        stop("do: `item` must be provided", call. = FALSE)
       }
-      if (!is.null(private$.type) && !any(private$.type %in% .class2(item))) {
-        stop("do: The provided item must have class ",
-             paste0("<", private$.type, ">", collapse = "|"),
-             call. = FALSE)
+      force(item)
+
+      if (!is.null(private$.type)) {
+        if (is.null(item)) {
+          if (!private$.allow_null) {
+            stop("do: `item` must not be NULL; use `allow_null = TRUE` to permit it",
+                 call. = FALSE)
+          }
+        } else if (!any(private$.type %in% .class2(item))) {
+          stop("do: The provided item must have class ",
+               paste0("<", private$.type, ">", collapse = "|"),
+               call. = FALSE)
+        }
       }
 
       private$.pos <- private$.pos + 1L
-      private$.store$history[[private$.pos]] <- item
+
+      # `[[<-` would delete the element when `item` is NULL, so assign
+      # through `[` with a one-element list instead
+      private$.store$history[private$.pos] <- list(item)
 
       if (length(private$.store$history) > private$.pos) {
         length(private$.store$history) <- private$.pos
@@ -231,7 +259,7 @@ UndoManager <- R6::R6Class(
         stop("clear: `clear_value` must be either `TRUE` or `FALSE`.", call. = FALSE)
       }
 
-      if (clear_value || private$.pos == 0L) {
+      if (clear_value || self$is_empty) {
         private$.store$history <- list()
         private$.pos <- 0L
       } else {
@@ -275,6 +303,7 @@ state <- function(x) {
   p <- x$.__enclos_env__$private
   list(
     type = p$.type,
+    allow_null = p$.allow_null,
     history = p$.store$history,
     position = p$.pos
   )

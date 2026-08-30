@@ -78,6 +78,42 @@ nums$redo(Inf)$value
 #> [1] 12
 ```
 
+### Storing `NULL`
+
+`NULL` is a value like any other, so it can be stored and undone:
+
+```r
+nums <- UndoManager$new()$do(5)$do(NULL)$do(10)
+
+nums$undo()$value
+#> NULL
+
+nums$undo()$value
+#> [1] 5
+```
+
+Because an empty manager also reports a `NULL` value, use `is_empty` to tell the two apart:
+
+```r
+UndoManager$new()$value
+#> NULL
+UndoManager$new()$is_empty
+#> [1] TRUE
+
+UndoManager$new()$do(NULL)$value
+#> NULL
+UndoManager$new()$do(NULL)$is_empty
+#> [1] FALSE
+```
+
+When a `type` is set, storing `NULL` also requires setting `allow_null`:
+
+```r
+nums <- UndoManager$new("numeric", allow_null = TRUE)
+nums$do(5)
+nums$do(NULL)
+```
+
 ### Objects with reference semantics
 
 Items are stored exactly as they are given, without being copied. For most common objects (vectors, lists, data frames), R's copy-on-modify behaviour means the history is effectively a snapshot, so changing your own copy afterwards doesn't affect it.

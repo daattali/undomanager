@@ -133,3 +133,33 @@
       [1] 3
       
 
+# UndoManager print shows NULL items
+
+    Code
+      print(UndoManager$new()$do(NULL))
+    Output
+      <UndoManager> of arbitrary items with 0 undos and 0 redos
+      
+      ### Current item ###
+      NULL
+
+---
+
+    Code
+      print(UndoManager$new()$do(1)$do(NULL)$do(3)$undo())
+    Output
+      <UndoManager> of arbitrary items with 1 undo and 1 redo
+      
+      ### Current item ###
+      NULL
+      
+      ### Undo stack ###
+      1.
+      [1] 1
+      
+      
+      ### Redo stack ###
+      1.
+      [1] 3
+      
+
