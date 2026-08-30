@@ -18,9 +18,14 @@ UndoManager <- R6::R6Class(
 
   private = list(
     .type = NULL,
-    .undo_stack = list(),
-    .redo_stack = list(),
-    .current = NULL,
+
+    # The history is a single list plus a cursor. `.pos` is the index of the
+    # current item, or 0 when the manager is empty. Everything before the
+    # cursor is undo history; everything after it is redo history.
+    # The history list lives inside a plain environment rather than directly
+    # in this list because writing to an R6 private field is slow.
+    .store = NULL,
+    .pos = 0L,
 
     .rx_dep = NULL,
     .rx_expr = NULL,
@@ -35,15 +40,15 @@ UndoManager <- R6::R6Class(
   active = list(
 
     value = function() {
-      private$.current
+      if (private$.pos == 0L) NULL else private$.store$history[[private$.pos]]
     },
 
     undo_size = function() {
-      length(private$.undo_stack)
+      max(private$.pos - 1L, 0L)
     },
 
     redo_size = function() {
-      length(private$.redo_stack)
+      if (private$.pos == 0L) 0L else length(private$.store$history) - private$.pos
     },
 
     can_undo = function() {
@@ -72,6 +77,8 @@ UndoManager <- R6::R6Class(
              call. = FALSE)
       }
       private$.type <- type
+      private$.store <- new.env(parent = emptyenv())
+      private$.store$history <- list()
       private$.rx_dep <- function(x) NULL
       invisible(self)
     },
@@ -96,7 +103,7 @@ UndoManager <- R6::R6Class(
     #' TODO
     print = function(...) {
 
-      if (is.null(private$.current)) {
+      if (private$.pos == 0L) {
         cat("Empty ")
       }
 
@@ -107,7 +114,7 @@ UndoManager <- R6::R6Class(
         cat0(" of items of type ", paste0("<", private$.type, ">", collapse = "|"))
       }
 
-      if (is.null(private$.current)) {
+      if (private$.pos == 0L) {
         cat("\n")
       } else {
         cat0(" with ")
@@ -115,14 +122,13 @@ UndoManager <- R6::R6Class(
         cat0(self$redo_size, if(self$redo_size == 1) " redo" else " redos", "\n")
 
         cat("\n### Current item ###\n")
-        print(private$.current)
+        print(self$value)
 
         if (self$undo_size > 0) {
           cat("\n### Undo stack ###\n")
           for (idx in seq_len(self$undo_size)) {
-            idx_rev <- (self$undo_size - idx + 1)
             cat0(idx, ".\n")
-            print(private$.undo_stack[[idx_rev]])
+            print(private$.store$history[[private$.pos - idx]])
             cat("\n")
           }
         }
@@ -130,9 +136,8 @@ UndoManager <- R6::R6Class(
         if (self$redo_size > 0) {
           cat("\n### Redo stack ###\n")
           for (idx in seq_len(self$redo_size)) {
-            idx_rev <- (self$redo_size - idx + 1)
             cat0(idx, ".\n")
-            print(private$.redo_stack[[idx_rev]])
+            print(private$.store$history[[private$.pos + idx]])
             cat("\n")
           }
         }
@@ -160,14 +165,7 @@ UndoManager <- R6::R6Class(
       if (n < 1L) {
         return(invisible(self))
       }
-      len <- length(private$.undo_stack)
-      private$.redo_stack <- c(
-        private$.redo_stack,
-        list(private$.current),
-        rev(private$.undo_stack[seq.int(to = len, length.out = n - 1L)])
-      )
-      private$.current <- private$.undo_stack[[len - n + 1L]]
-      private$.undo_stack <- private$.undo_stack[seq_len(len - n)]
+      private$.pos <- private$.pos - n
 
       private$.invalidate()
 
@@ -193,15 +191,7 @@ UndoManager <- R6::R6Class(
       if (n < 1L) {
         return(invisible(self))
       }
-      len <- length(private$.redo_stack)
-
-      private$.undo_stack <- c(
-        private$.undo_stack,
-        list(private$.current),
-        rev(private$.redo_stack[seq.int(to = len, length.out = n - 1L)])
-      )
-      private$.current <- private$.redo_stack[[len - n + 1L]]
-      private$.redo_stack <- private$.redo_stack[seq_len(len - n)]
+      private$.pos <- private$.pos + n
 
       private$.invalidate()
 
@@ -224,13 +214,12 @@ UndoManager <- R6::R6Class(
              call. = FALSE)
       }
 
-      if (is.null(private$.current)) {
-        private$.undo_stack <- list()
-      } else {
-        private$.undo_stack <- append(private$.undo_stack, list(private$.current))
+      private$.pos <- private$.pos + 1L
+      private$.store$history[[private$.pos]] <- item
+
+      if (length(private$.store$history) > private$.pos) {
+        length(private$.store$history) <- private$.pos
       }
-      private$.current <- item
-      private$.redo_stack <- list()
 
       private$.invalidate()
 
@@ -242,11 +231,12 @@ UndoManager <- R6::R6Class(
         stop("clear: `clear_value` must be either `TRUE` or `FALSE`.", call. = FALSE)
       }
 
-      private$.undo_stack <- list()
-      private$.redo_stack <- list()
-
-      if (clear_value) {
-        private$.current <- NULL
+      if (clear_value || private$.pos == 0L) {
+        private$.store$history <- list()
+        private$.pos <- 0L
+      } else {
+        private$.store$history <- list(private$.store$history[[private$.pos]])
+        private$.pos <- 1L
       }
 
       private$.invalidate()
@@ -285,8 +275,7 @@ state <- function(x) {
   p <- x$.__enclos_env__$private
   list(
     type = p$.type,
-    value = p$.current,
-    undo_stack = p$.undo_stack,
-    redo_stack = p$.redo_stack
+    history = p$.store$history,
+    position = p$.pos
   )
 }
