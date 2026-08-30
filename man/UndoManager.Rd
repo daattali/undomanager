@@ -11,243 +11,219 @@ using undo and redo operations.
 TODO
 
 ## ------------------------------------------------
-## Method `UndoManager$new()`
+## Method `UndoManager$new`
 ## ------------------------------------------------
 
 TODO
 
 ## ------------------------------------------------
-## Method `UndoManager$print()`
+## Method `UndoManager$print`
 ## ------------------------------------------------
 
 TODO
 
 ## ------------------------------------------------
-## Method `UndoManager$undo()`
+## Method `UndoManager$undo`
 ## ------------------------------------------------
 
 TODO
 
 ## ------------------------------------------------
-## Method `UndoManager$redo()`
+## Method `UndoManager$redo`
 ## ------------------------------------------------
 
 TODO
 
 ## ------------------------------------------------
-## Method `UndoManager$do()`
+## Method `UndoManager$do`
 ## ------------------------------------------------
 
 TODO
 }
 \section{Active bindings}{
-  \if{html}{\out{<div class="r6-active-bindings">}}
-  \describe{
-    \item{\code{value}}{Get the value}
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{value}}{Get the value}
 
-    \item{\code{can_undo}}{Whether there are any undo operations available}
+\item{\code{can_undo}}{Whether there are any undo operations available}
 
-    \item{\code{can_redo}}{Whether there are any redo operations available}
+\item{\code{can_redo}}{Whether there are any redo operations available}
 
-    \item{\code{undo_size}}{Get the number of undo operations}
+\item{\code{undo_size}}{Get the number of undo operations}
 
-    \item{\code{redo_size}}{Get the number of redo operations}
-  }
-  \if{html}{\out{</div>}}
+\item{\code{redo_size}}{Get the number of redo operations}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-  \itemize{
-    \item \href{#method-UndoManager-initialize}{\code{UndoManager$new()}}
-    \item \href{#method-UndoManager-reactive}{\code{UndoManager$reactive()}}
-    \item \href{#method-UndoManager-print}{\code{UndoManager$print()}}
-    \item \href{#method-UndoManager-undo}{\code{UndoManager$undo()}}
-    \item \href{#method-UndoManager-redo}{\code{UndoManager$redo()}}
-    \item \href{#method-UndoManager-do}{\code{UndoManager$do()}}
-    \item \href{#method-UndoManager-clear}{\code{UndoManager$clear()}}
-    \item \href{#method-UndoManager-clone}{\code{UndoManager$clone()}}
-  }
+\itemize{
+\item \href{#method-UndoManager-new}{\code{UndoManager$new()}}
+\item \href{#method-UndoManager-reactive}{\code{UndoManager$reactive()}}
+\item \href{#method-UndoManager-print}{\code{UndoManager$print()}}
+\item \href{#method-UndoManager-undo}{\code{UndoManager$undo()}}
+\item \href{#method-UndoManager-redo}{\code{UndoManager$redo()}}
+\item \href{#method-UndoManager-do}{\code{UndoManager$do()}}
+\item \href{#method-UndoManager-clear}{\code{UndoManager$clear()}}
+}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-UndoManager-initialize"></a>}}
-\if{latex}{\out{\hypertarget{method-UndoManager-initialize}{}}}
-\subsection{\code{UndoManager$new()}}{
-  TODO
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{UndoManager$new(type = NULL)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{type}}{The permitted classes of the objects (\code{NULL} to allow any object)}
-    }
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Returns}{
-    TODO
-  }
-  \subsection{Examples}{
-    \if{html}{\out{<div class="r example copy">}}
-    \preformatted{TODO
-}
-    \if{html}{\out{</div>}}
-  }
+\if{html}{\out{<a id="method-UndoManager-new"></a>}}
+\if{latex}{\out{\hypertarget{method-UndoManager-new}{}}}
+\subsection{Method \code{new()}}{
+TODO
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UndoManager$new(type = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{The permitted classes of the objects (\code{NULL} to allow any object)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+TODO
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{TODO
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-UndoManager-reactive"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-reactive}{}}}
-\subsection{\code{UndoManager$reactive()}}{
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{UndoManager$reactive()}
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{reactive()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UndoManager$reactive()}\if{html}{\out{</div>}}
 }
 
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-UndoManager-print"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-print}{}}}
-\subsection{\code{UndoManager$print()}}{
-  TODO
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{UndoManager$print(...)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{type}}{The class of the object (\code{NULL} to allow any object)}
-    }
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Examples}{
-    \if{html}{\out{<div class="r example copy">}}
-    \preformatted{TODO
-}
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{print()}}{
+TODO
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UndoManager$print(...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{The class of the object (\code{NULL} to allow any object)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{TODO
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-UndoManager-undo"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-undo}{}}}
-\subsection{\code{UndoManager$undo()}}{
-  TODO
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{UndoManager$undo(n = 1)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{n}}{The number of undo operations to perform. If \code{n} is larger
-than the number of available undo operations, all of them are
-performed. Use \code{Inf} to undo the entire history.}
-    }
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Returns}{
-    TODO
-  }
-  \subsection{Examples}{
-    \if{html}{\out{<div class="r example copy">}}
-    \preformatted{TODO
-}
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{undo()}}{
+TODO
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UndoManager$undo(n = 1)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{The number of undo operations to perform. If \code{n} is larger
+than the number of available undo operations, all of them are
+performed. Use \code{Inf} to undo the entire history.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+TODO
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{TODO
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-UndoManager-redo"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-redo}{}}}
-\subsection{\code{UndoManager$redo()}}{
-  TODO
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{UndoManager$redo(n = 1)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{n}}{The number of redo operations to perform. If \code{n} is larger
-than the number of available redo operations, all of them are
-performed. Use \code{Inf} to redo the entire history.}
-    }
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Returns}{
-    TODO
-  }
-  \subsection{Examples}{
-    \if{html}{\out{<div class="r example copy">}}
-    \preformatted{TODO
-}
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{redo()}}{
+TODO
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UndoManager$redo(n = 1)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{n}}{The number of redo operations to perform. If \code{n} is larger
+than the number of available redo operations, all of them are
+performed. Use \code{Inf} to redo the entire history.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+TODO
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{TODO
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-UndoManager-do"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-do}{}}}
-\subsection{\code{UndoManager$do()}}{
-  TODO
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{UndoManager$do(item)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{type}}{The class of the object (\code{NULL} to allow any object)}
-    }
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Returns}{
-    TODO
-  }
-  \subsection{Examples}{
-    \if{html}{\out{<div class="r example copy">}}
-    \preformatted{TODO
-}
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{do()}}{
+TODO
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UndoManager$do(item)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{The class of the object (\code{NULL} to allow any object)}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+TODO
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{TODO
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-UndoManager-clear"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-clear}{}}}
-\subsection{\code{UndoManager$clear()}}{
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{UndoManager$clear(clear_value = FALSE)}
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{clear()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UndoManager$clear(clear_value = FALSE)}\if{html}{\out{</div>}}
 }
 
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-UndoManager-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-UndoManager-clone}{}}}
-\subsection{\code{UndoManager$clone()}}{
-  The objects of this class are cloneable with this method.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{UndoManager$clone(deep = FALSE)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{deep}}{Whether to make a deep clone.}
-    }
-    \if{html}{\out{</div>}}
-  }
 }
-
 }

@@ -14,7 +14,7 @@
 #' @export
 UndoManager <- R6::R6Class(
   "UndoManager",
-  cloneable = TRUE,
+  cloneable = FALSE,
 
   private = list(
     .type = NULL,
