@@ -5,7 +5,7 @@ General framework to manage the history of any object, allowing undo and redo op
 ### Example
 
 ```r
-nums <- UndoManager$new("numeric")
+nums <- UndoManager$new()
 nums$do(5)
 nums$do(7)
 nums$do(10)
@@ -17,23 +17,89 @@ print(nums)
 ```
 
 ```
-<UndoManager> of items of type <numeric> with 2 undos and 1 redo
+<UndoManager> of arbitrary items with 2 undos and 1 redo
 
 ### Current item ###
-10 
+[1] 10
 
 ### Undo stack ###
-1. 7 
-2. 5 
+1.
+[1] 7
+
+2.
+[1] 5
+
 
 ### Redo stack ###
-1. 12 
+1.
+[1] 12
 ```
+
+### Chaining
 
 You can also chain all the operations; the above is equivalent to:
 
 ```r
-UndoManager$new("numeric")$do(5)$do(7)$do(10)$do(12)$undo()$undo()$redo()
+UndoManager$new()$do(5)$do(7)$do(10)$do(12)$undo()$undo()$redo()
+```
+
+### Restricting the type of items
+
+By default an UndoManager accepts any object. Pass a `type` to `new()` to restrict it to one or more classes:
+
+```r
+nums <- UndoManager$new("numeric")
+nums$do(5)
+nums$do("a")
+#> Error: do: The provided item must have class <numeric>
+```
+
+The type is matched against the same classes that R's S3 dispatch would use. That means `"numeric"` also accepts integers and numeric matrices, while rejecting things like logicals, factors, or dates. Pass several classes to allow any of them:
+
+```r
+items <- UndoManager$new(c("numeric", "character"))
+items$do(5)
+items$do("a")
+items$do(TRUE)
+#> Error: do: The provided item must have class <numeric>|<character>
+```
+
+### Undoing or redoing multiple steps
+
+`undo()` and `redo()` accept an `n` argument to move more than one step at a time. If `n` is larger than the number of available operations, they stop at the end of the history. Use `Inf` to go all the way.
+
+```r
+nums <- UndoManager$new()$do(5)$do(7)$do(10)$do(12)
+
+nums$undo(2)$value
+#> [1] 7
+
+nums$redo(Inf)$value
+#> [1] 12
+```
+
+### Objects with reference semantics
+
+Items are stored exactly as they are given, without being copied. For most common objects (vectors, lists, data frames), R's copy-on-modify behaviour means the history is effectively a snapshot, so changing your own copy afterwards doesn't affect it.
+
+Environments and R6 objects are different: they're stored by reference, which means modifying one after adding it also changes what the history holds.
+
+```r
+env <- new.env()
+env$val <- "before"
+
+hist <- UndoManager$new()$do(env)$do("something else")
+env$val <- "after"
+
+hist$undo()$value$val
+#> [1] "after"
+```
+
+If you want the history to be a true snapshot of a reference object, store a copy of it yourself:
+
+```r
+hist$do(as.environment(as.list(env, all.names = TRUE)))  # environments
+hist$do(obj$clone(deep = TRUE))                          # R6 objects
 ```
 
 ### Using with shiny
