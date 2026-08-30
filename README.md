@@ -156,7 +156,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  undoredo <- UndoManager$new(type = c("numeric", "integer"))$reactive()
+  undoredo <- UndoManager$new(type = c("numeric"))$reactive()
   
   observeEvent(input$save, {
     undoredo()$do(input$num)

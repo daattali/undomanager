@@ -689,3 +689,103 @@ test_that("UndoManager print shows NULL items", {
   expect_snapshot(print(UndoManager$new()$do(NULL)))
   expect_snapshot(print(UndoManager$new()$do(1)$do(NULL)$do(3)$undo()))
 })
+
+test_that("UndoManager reactive returns a cached reactive for the manager", {
+  skip_if_not_installed("shiny")
+
+  x <- UndoManager$new()$do(1)
+  rx <- x$reactive()
+
+  expect_true(is.function(rx))
+  expect_s3_class(rx, "reactive")
+  expect_identical(x$reactive(), x$reactive())
+  expect_identical(x$reactive(), rx)
+  shiny::isolate({
+    expect_identical(rx(), x)
+    expect_identical(rx()$value, 1)
+  })
+
+  y <- UndoManager$new()$do(1)$do(2)$undo()
+  shiny::isolate(expect_identical(y$reactive()()$value, 1))
+})
+
+test_that("UndoManager reactive notifies observers when the value changes", {
+  skip_if_not_installed("shiny")
+
+  runs <- function(action) {
+    m <- UndoManager$new()$do(1)$do(2)
+    r <- m$reactive()
+    n <- 0
+    shiny::testServer(
+      function(input, output, session) {
+        shiny::observe({ r(); n <<- n + 1 })
+      },
+      {
+        session$flushReact()
+        n <<- 0
+        action(m)
+        session$flushReact()
+      }
+    )
+    n
+  }
+
+  expect_identical(runs(function(m) m$do(3)), 1)
+  expect_identical(runs(function(m) m$undo()), 1)
+  expect_identical(runs(function(m) m$clear()), 1)
+  expect_identical(runs(function(m) m$undo(2)), 1)
+
+  # No-ops must not notify
+  expect_identical(runs(function(m) m$redo()), 0)
+  expect_identical(runs(function(m) m$undo(0)), 0)
+  expect_identical(runs(function(m) m$redo(99)), 0)
+})
+
+test_that("UndoManager reactive drives an output", {
+  skip_if_not_installed("shiny")
+
+  shiny::testServer(function(input, output, session) {
+    m <- UndoManager$new()$do("first")
+    r <- m$reactive()
+    output$txt <- shiny::renderPrint(r()$value)
+
+    session$flushReact()
+    expect_identical(output$txt, '[1] "first"')
+
+    m$do("second")
+    session$flushReact()
+    expect_identical(output$txt, '[1] "second"')
+
+    m$undo()
+    session$flushReact()
+    expect_identical(output$txt, '[1] "first"')
+  }, {})
+})
+
+test_that("UndoManager reactives are independent between managers", {
+  skip_if_not_installed("shiny")
+
+  a <- UndoManager$new()$do(1)
+  b <- UndoManager$new()$do(1)
+  ra <- a$reactive()
+  rb <- b$reactive()
+  na <- 0
+  nb <- 0
+
+  shiny::testServer(
+    function(input, output, session) {
+      shiny::observe({ ra(); na <<- na + 1 })
+      shiny::observe({ rb(); nb <<- nb + 1 })
+    },
+    {
+      session$flushReact()
+      na <<- 0
+      nb <<- 0
+      a$do(2)
+      session$flushReact()
+    }
+  )
+
+  expect_identical(na, 1)
+  expect_identical(nb, 0)
+})
