@@ -218,7 +218,7 @@ UndoManager <- R6::R6Class(
       if (is.null(item)) {
         stop("do: item must not be NULL", call. = FALSE)
       }
-      if (!is.null(private$.type) && !inherits(item, private$.type)) {
+      if (!is.null(private$.type) && !any(private$.type %in% .class2(item))) {
         stop("do: The provided item must have class ",
              paste0("<", private$.type, ">", collapse = "|"),
              call. = FALSE)

@@ -43,8 +43,32 @@ test_that("UndoManager with multiple types", {
   expect_error(UndoManager$new(c("character", "numeric"))$do(1), NA)
   expect_error(UndoManager$new(c("character", "numeric"))$do("a"), NA)
   expect_error(UndoManager$new(c("character", "numeric"))$do("a")$do(1), NA)
-  expect_error(UndoManager$new(c("character", "numeric"))$do("a")$do(1)$do(1L))
+  expect_error(UndoManager$new(c("character", "numeric"))$do("a")$do(1)$do(1L), NA)
   expect_error(UndoManager$new(c("character", "integer", "numeric"))$do("a")$do(1)$do(1L), NA)
+})
+
+test_that("UndoManager type matches the classes S3 dispatch would use", {
+  expect_error(UndoManager$new("numeric")$do(1L), NA)
+  expect_error(UndoManager$new("numeric")$do(1:3), NA)
+  expect_error(UndoManager$new("numeric")$do(matrix(1.5, 1)), NA)
+  expect_error(UndoManager$new("numeric")$do(array(1.5, c(1, 1, 1))), NA)
+
+  expect_error(UndoManager$new("integer")$do(1L), NA)
+  expect_error(UndoManager$new("matrix")$do(matrix(1.5, 1)), NA)
+  expect_error(UndoManager$new("array")$do(matrix(1.5, 1)), NA)
+
+  expect_error(UndoManager$new("double")$do(1), NA)
+  expect_error(UndoManager$new("double")$do(matrix(1.5, 1)), NA)
+  expect_error(UndoManager$new("integer")$do(matrix(1L, 1)), NA)
+  expect_error(UndoManager$new("double")$do(1L))
+
+  expect_error(UndoManager$new("numeric")$do("a"))
+  expect_error(UndoManager$new("numeric")$do(TRUE))
+  expect_error(UndoManager$new("numeric")$do(factor("a")))
+  expect_error(UndoManager$new("numeric")$do(Sys.Date()))
+  expect_error(UndoManager$new("numeric")$do(data.frame(a = 1)))
+  expect_error(UndoManager$new("numeric")$do(list(1)))
+  expect_error(UndoManager$new("integer")$do(1.5))
 })
 
 test_that("UndoManager clear works", {
