@@ -423,3 +423,48 @@ test_that("UndoManager print pluralises undo and redo counts", {
   expect_snapshot(print(UndoManager$new()$do(1)$do(2)$undo()))
   expect_snapshot(print(UndoManager$new()$do(1)$do(2)$do(3)$undo()$undo()))
 })
+
+test_that("UndoManager stores and restores any type of object", {
+
+  expect_identical(UndoManager$new()$do(list(a = 1, b = 2))$do(0)$undo()$value, list(a = 1, b = 2))
+  expect_identical(UndoManager$new()$do(data.frame(x = 1:2))$do(0)$undo()$value, data.frame(x = 1:2))
+  expect_identical(UndoManager$new()$do(matrix(1:4, 2))$do(0)$undo()$value, matrix(1:4, 2))
+  expect_identical(UndoManager$new()$do(factor("a"))$do(0)$undo()$value, factor("a"))
+  expect_identical(UndoManager$new()$do(as.Date("2024-01-15"))$do(0)$undo()$value, as.Date("2024-01-15"))
+  expect_identical(UndoManager$new()$do(list(a = 1))$do(0)$undo()$redo()$value, 0)
+})
+
+test_that("UndoManager type restriction works for non-scalar classes", {
+  expect_error(UndoManager$new("list")$do(list(1)), NA)
+  expect_error(UndoManager$new("data.frame")$do(data.frame(x = 1)), NA)
+  expect_error(UndoManager$new("matrix")$do(matrix(1:4, 2)), NA)
+  expect_error(UndoManager$new("factor")$do(factor("a")), NA)
+  expect_error(UndoManager$new("Date")$do(as.Date("2024-01-15")), NA)
+  expect_error(UndoManager$new("list")$do(1))
+  expect_error(UndoManager$new("data.frame")$do(list(1)))
+})
+
+test_that("UndoManager active bindings cannot be assigned to", {
+  x <- UndoManager$new()$do(1)
+
+  expect_error(x$value <- 2)
+  expect_error(x$undo_size <- 2)
+  expect_error(x$redo_size <- 2)
+  expect_error(x$can_undo <- TRUE)
+  expect_error(x$can_redo <- TRUE)
+})
+
+test_that("UndoManager do requires an item", {
+  expect_error(UndoManager$new()$do())
+  expect_error(UndoManager$new()$do(1)$do())
+})
+
+test_that("UndoManager stores reference objects by reference", {
+  # Environments (and R6 objects) are not copied when they are added, so
+  # changing one afterwards also changes what the history holds.
+  env <- new.env()
+  env$foo <- "before"
+  x <- UndoManager$new()$do(env)$do("other")
+  env$foo <- "after"
+  expect_identical(x$undo()$value$foo, "after")
+})
