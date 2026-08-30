@@ -64,6 +64,49 @@ test_that("UndoManager clear works", {
   )
 })
 
+test_that("UndoManager clear keeps the current value but drops the history", {
+  expect_identical(UndoManager$new()$do(1)$do(2)$do(3)$clear()$value, 3)
+  expect_identical(UndoManager$new()$do(1)$do(2)$do(3)$clear()$undo_size, 0L)
+  expect_identical(UndoManager$new()$do(1)$do(2)$do(3)$clear()$redo_size, 0L)
+  expect_false(UndoManager$new()$do(1)$do(2)$do(3)$clear()$can_undo)
+})
+
+test_that("UndoManager clear also discards the redo branch", {
+  expect_identical(UndoManager$new()$do(1)$do(2)$do(3)$undo()$clear()$value, 2)
+  expect_identical(UndoManager$new()$do(1)$do(2)$do(3)$undo()$clear()$redo_size, 0L)
+  expect_false(UndoManager$new()$do(1)$do(2)$do(3)$undo()$clear()$can_redo)
+})
+
+test_that("UndoManager clear with clear_value empties the manager", {
+  expect_null(UndoManager$new()$do(1)$do(2)$clear(clear_value = TRUE)$value)
+  expect_identical(UndoManager$new()$do(1)$do(2)$clear(clear_value = TRUE)$undo_size, 0L)
+  expect_identical(UndoManager$new()$do(1)$do(2)$clear(clear_value = TRUE)$redo_size, 0L)
+})
+
+test_that("UndoManager clear on an empty manager is safe", {
+  expect_null(UndoManager$new()$clear()$value)
+  expect_null(UndoManager$new()$clear(clear_value = TRUE)$value)
+  expect_identical(UndoManager$new()$clear()$undo_size, 0L)
+  expect_identical(UndoManager$new()$clear()$redo_size, 0L)
+})
+
+test_that("UndoManager is still usable after clear", {
+  expect_identical(UndoManager$new()$do(1)$do(2)$clear()$do(3)$value, 3)
+  expect_identical(UndoManager$new()$do(1)$do(2)$clear()$do(3)$undo_size, 1L)
+  expect_identical(UndoManager$new()$do(1)$do(2)$clear()$do(3)$undo()$value, 2)
+
+  expect_identical(UndoManager$new()$do(1)$do(2)$clear(clear_value = TRUE)$do(3)$value, 3)
+  expect_identical(UndoManager$new()$do(1)$do(2)$clear(clear_value = TRUE)$do(3)$undo_size, 0L)
+})
+
+test_that("UndoManager clear rejects a non-flag clear_value", {
+  expect_error(UndoManager$new()$clear(NA), "clear_value")
+  expect_error(UndoManager$new()$clear("yes"), "clear_value")
+  expect_error(UndoManager$new()$clear(1), "clear_value")
+  expect_error(UndoManager$new()$clear(c(TRUE, TRUE)), "clear_value")
+  expect_error(UndoManager$new()$clear(NULL), "clear_value")
+})
+
 test_that("UndoManager can_undo and can_redo", {
   expect_false(UndoManager$new()$can_undo)
   expect_false(UndoManager$new()$do(1)$can_undo)
@@ -360,4 +403,23 @@ test_that("UndoManager undo(n)/redo(n) invalidate exactly once", {
   x$undo(3)
   x$redo(0)
   expect_identical(count(x), 9)
+})
+
+test_that("UndoManager print shows an empty manager", {
+  expect_snapshot(print(UndoManager$new()))
+  expect_snapshot(print(UndoManager$new("numeric")))
+  expect_snapshot(print(UndoManager$new(c("numeric", "character"))))
+})
+
+test_that("UndoManager print shows the current item and both stacks", {
+  expect_snapshot(print(UndoManager$new()$do(1)))
+  expect_snapshot(print(UndoManager$new("numeric")$do(1)$do(2)$do(3)))
+  expect_snapshot(print(UndoManager$new()$do(1)$do(2)$do(3)$undo()))
+})
+
+test_that("UndoManager print pluralises undo and redo counts", {
+  expect_snapshot(print(UndoManager$new()$do(1)$do(2)))
+  expect_snapshot(print(UndoManager$new()$do(1)$do(2)$do(3)))
+  expect_snapshot(print(UndoManager$new()$do(1)$do(2)$undo()))
+  expect_snapshot(print(UndoManager$new()$do(1)$do(2)$do(3)$undo()$undo()))
 })
