@@ -20,6 +20,7 @@ UndoManager <- R6::R6Class(
   private = list(
     .type = NULL,
     .allow_null = FALSE,
+    .max_size = Inf,
 
     # The history is a single list plus a cursor. `.pos` is the index of the
     # current item, or 0 when the manager is empty. Everything before the
@@ -74,10 +75,12 @@ UndoManager <- R6::R6Class(
     #' @param type The permitted classes of the objects (`NULL` to allow any object)
     #' @param allow_null Whether `NULL` values are allowed. Only used when
     #' `type` is given; an untyped manager always accepts any object including `NULL`.
+    #' @param max_size The maximum number of items to keep. Once the history
+    #' grows past this number, the oldest items are dropped. Use `Inf` for no limit.
     #' @examples
     #' TODO
     #' @return TODO
-    initialize = function(type = NULL, allow_null = FALSE) {
+    initialize = function(type = NULL, allow_null = FALSE, max_size = Inf) {
       if (!is.null(type) &&
           !checkmate::test_character(type, any.missing = FALSE, unique = TRUE,
                                      min.chars = 1, min.len = 1, names = "unnamed")) {
@@ -91,7 +94,12 @@ UndoManager <- R6::R6Class(
       if (!checkmate::test_logical(allow_null, any.missing = FALSE, len = 1, null.ok = FALSE)) {
         stop("UndoManager: `allow_null` must be either `TRUE` or `FALSE`.", call. = FALSE)
       }
+      if (!checkmate::test_count(max_size, positive = TRUE) && !identical(max_size, Inf)) {
+        stop("UndoManager: `max_size` must be a positive integer, or `Inf`",
+             call. = FALSE)
+      }
       private$.type <- type
+      private$.max_size <- max_size
       private$.allow_null <- allow_null
       private$.store <- new.env(parent = emptyenv())
       private$.store$history <- list()
@@ -171,8 +179,7 @@ UndoManager <- R6::R6Class(
     #' TODO
     #' @return TODO
     undo = function(n = 1) {
-      if (!checkmate::test_number(n, lower = 0, na.ok = FALSE) ||
-          (is.finite(n) && n != floor(n))) {
+      if (!checkmate::test_count(n) && !identical(n, Inf)) {
         stop("undo: `n` must be a single non-negative whole number, or `Inf`",
              call. = FALSE)
       }
@@ -197,8 +204,7 @@ UndoManager <- R6::R6Class(
     #' TODO
     #' @return TODO
     redo = function(n = 1) {
-      if (!checkmate::test_number(n, lower = 0, na.ok = FALSE) ||
-          (is.finite(n) && n != floor(n))) {
+      if (!checkmate::test_count(n) && !identical(n, Inf)) {
         stop("redo: `n` must be a single non-negative whole number, or `Inf`",
              call. = FALSE)
       }
@@ -247,6 +253,11 @@ UndoManager <- R6::R6Class(
 
       if (length(private$.store$history) > private$.pos) {
         length(private$.store$history) <- private$.pos
+      }
+
+      if (length(private$.store$history) > private$.max_size) {
+        private$.store$history <- private$.store$history[-1L]
+        private$.pos <- private$.pos - 1L
       }
 
       private$.invalidate()
@@ -304,6 +315,7 @@ state <- function(x) {
   list(
     type = p$.type,
     allow_null = p$.allow_null,
+    max_size = p$.max_size,
     history = p$.store$history,
     position = p$.pos
   )

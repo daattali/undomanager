@@ -789,3 +789,82 @@ test_that("UndoManager reactives are independent between managers", {
   expect_identical(na, 1)
   expect_identical(nb, 0)
 })
+
+test_that("UndoManager max_size caps the history", {
+  m <- UndoManager$new(max_size = 3)
+  for (i in 1:6) m$do(i)
+
+  expect_identical(m$value, 6L)
+  expect_identical(m$undo_size, 2L)
+  expect_identical(m$redo_size, 0L)
+
+  expect_identical(m$undo()$value, 5L)
+  expect_identical(m$undo()$value, 4L)
+  expect_false(m$can_undo)
+
+  expect_identical(m$redo()$value, 5L)
+  expect_identical(m$redo()$value, 6L)
+  expect_false(m$can_redo)
+})
+
+test_that("UndoManager max_size interacts correctly with branching", {
+  b <- UndoManager$new(max_size = 4)
+  for (i in 1:6) b$do(i)
+  b$undo(2)
+  b$do(99)
+
+  expect_identical(b$value, 99)
+  expect_identical(b$undo_size, 2L)
+  expect_identical(b$redo_size, 0L)
+
+  expect_identical(b$undo()$value, 4L)
+  expect_identical(b$undo()$value, 3L)
+  expect_false(b$can_undo)
+})
+
+test_that("UndoManager max_size of 1 keeps only the current item", {
+  o <- UndoManager$new(max_size = 1)
+  o$do(1)$do(2)$do(3)
+
+  expect_identical(o$value, 3)
+  expect_identical(o$undo_size, 0L)
+  expect_false(o$can_undo)
+  expect_identical(o$undo()$value, 3)
+})
+
+test_that("UndoManager is unlimited by default", {
+  d <- UndoManager$new()
+  for (i in 1:200) d$do(i)
+  expect_identical(d$undo_size, 199L)
+})
+
+test_that("UndoManager sizes stay integers after trimming", {
+  m <- UndoManager$new(max_size = 3)
+  for (i in 1:6) m$do(i)
+
+  expect_type(m$undo_size, "integer")
+  expect_type(m$redo_size, "integer")
+  m$undo()
+  expect_type(m$undo_size, "integer")
+  expect_type(m$redo_size, "integer")
+})
+
+test_that("UndoManager validates max_size", {
+  for (bad in list(0, -1, 1.5, NA, "5", c(2, 3), NULL, TRUE, -Inf, NaN)) {
+    expect_error(UndoManager$new(max_size = bad), "max_size")
+  }
+  expect_error(UndoManager$new(max_size = 1), NA)
+  expect_error(UndoManager$new(max_size = Inf), NA)
+})
+
+test_that("UndoManager max_size counts towards equality", {
+  expect_true(isTRUE(all.equal(
+    UndoManager$new(max_size = 5)$do(1),
+    UndoManager$new(max_size = 5)$do(1)
+  )))
+
+  expect_false(isTRUE(all.equal(
+    UndoManager$new(max_size = 5)$do(1),
+    UndoManager$new()$do(1)
+  )))
+})

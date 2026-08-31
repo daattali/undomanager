@@ -76,7 +76,7 @@ TODO
   TODO
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{UndoManager$new(type = NULL, allow_null = FALSE)}
+    \preformatted{UndoManager$new(type = NULL, allow_null = FALSE, max_size = Inf)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
@@ -85,6 +85,8 @@ TODO
       \item{\code{type}}{The permitted classes of the objects (\code{NULL} to allow any object)}
       \item{\code{allow_null}}{Whether \code{NULL} values are allowed. Only used when
 \code{type} is given; an untyped manager always accepts any object including \code{NULL}.}
+      \item{\code{max_size}}{The maximum number of items to keep. Once the history
+grows past this number, the oldest items are dropped. Use \code{Inf} for no limit.}
     }
     \if{html}{\out{</div>}}
   }
