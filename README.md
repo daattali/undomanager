@@ -206,7 +206,7 @@ ui <- fluidPage(
   numericInput("num", "Choose a number", 5),
   actionButton("save", "Save"),
   actionButton("undo", NULL, icon = icon("undo"), title = "Undo"),
-  actionButton("redo", NULL, icon = icon("redo"), title = "Undo"),
+  actionButton("redo", NULL, icon = icon("redo"), title = "Redo"),
   actionButton("clear", NULL, icon = icon("refresh"), title = "Clear"),
   verbatimTextOutput("stack")
 )
