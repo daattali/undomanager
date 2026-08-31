@@ -1,6 +1,6 @@
 Package: undomanager
 Title: Manage the History of Any Object with Undo/Redo Operations
-Version: 0.0.0.9002
+Version: 0.1.0
 Authors@R: c(
     person("Dean", "Attali",
         email = "daattali@gmail.com",
