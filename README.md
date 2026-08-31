@@ -46,7 +46,7 @@
 <h2 id="example">Example</h2>
 
 ```r
-nums <- UndoManager$new()
+nums <- undomanager()
 nums$do(5)
 nums$do(7)
 nums$do(10)
@@ -96,15 +96,15 @@ remotes::install_github("daattali/undomanager")
 You can also chain all the operations; the above is equivalent to:
 
 ```r
-UndoManager$new()$do(5)$do(7)$do(10)$do(12)$undo()$undo()$redo()
+undomanager()$do(5)$do(7)$do(10)$do(12)$undo()$undo()$redo()
 ```
 
 <h2 id="types">Restricting the type of items</h2>
 
-By default an UndoManager accepts any object. Pass a `type` to `new()` to restrict it to one or more classes:
+By default an UndoManager accepts any object. Pass a `type` to `undomanager()` to restrict it to one or more classes:
 
 ```r
-nums <- UndoManager$new("numeric")
+nums <- undomanager("numeric")
 nums$do(5)
 nums$do("a")
 #> Error: do: The provided item must have class <numeric>
@@ -113,7 +113,7 @@ nums$do("a")
 The type is matched against the same classes that R's S3 dispatch would use. That means `"numeric"` also accepts integers and numeric matrices, while rejecting things like logicals, factors, or dates. Pass several classes to allow any of them:
 
 ```r
-items <- UndoManager$new(c("numeric", "character"))
+items <- undomanager(c("numeric", "character"))
 items$do(5)
 items$do("a")
 items$do(TRUE)
@@ -125,7 +125,7 @@ items$do(TRUE)
 `undo()` and `redo()` accept an `n` argument to move more than one step at a time. If `n` is larger than the number of available operations, they stop at the end of the history. Use `Inf` to go all the way.
 
 ```r
-nums <- UndoManager$new()$do(5)$do(7)$do(10)$do(12)
+nums <- undomanager()$do(5)$do(7)$do(10)$do(12)
 
 nums$undo(2)$value
 #> [1] 7
@@ -139,7 +139,7 @@ nums$redo(Inf)$value
 `NULL` is a value like any other, so it can be stored and undone:
 
 ```r
-nums <- UndoManager$new()$do(5)$do(NULL)$do(10)
+nums <- undomanager()$do(5)$do(NULL)$do(10)
 
 nums$undo()$value
 #> NULL
@@ -151,21 +151,21 @@ nums$undo()$value
 Because an empty manager also reports a `NULL` value, use `is_empty` to tell the two apart:
 
 ```r
-UndoManager$new()$value
+undomanager()$value
 #> NULL
-UndoManager$new()$is_empty
+undomanager()$is_empty
 #> [1] TRUE
 
-UndoManager$new()$do(NULL)$value
+undomanager()$do(NULL)$value
 #> NULL
-UndoManager$new()$do(NULL)$is_empty
+undomanager()$do(NULL)$is_empty
 #> [1] FALSE
 ```
 
 When a `type` is set, storing `NULL` also requires setting `allow_null`:
 
 ```r
-nums <- UndoManager$new("numeric", allow_null = TRUE)
+nums <- undomanager("numeric", allow_null = TRUE)
 nums$do(5)
 nums$do(NULL)
 ```
@@ -180,7 +180,7 @@ Environments and R6 objects are different: they're stored by reference, which me
 env <- new.env()
 env$val <- "before"
 
-hist <- UndoManager$new()$do(env)$do("something else")
+hist <- undomanager()$do(env)$do("something else")
 env$val <- "after"
 
 hist$undo()$value$val
@@ -212,7 +212,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  undoredo <- UndoManager$new(type = c("numeric"))$reactive()
+  undoredo <- undomanager(type = c("numeric"))$reactive()
   
   observeEvent(input$save, {
     req(input$num)

@@ -1,17 +1,29 @@
-#' Undo/Redo manager
+#' Create an undo manager
 #'
-#' @description
-#' With the undo manager, you can manage the history of an object by
-#' using undo and redo operations.
+#' Create a new [UndoManager] to track the history of an object and move
+#' through it with undo and redo operations. The manager starts out empty; the
+#' first call to `$do()` gives it a value.
 #'
-#' @field value Get the value
-#' @field is_empty Whether the manager holds no value at all
-#' @field can_undo Whether there are any undo operations available
-#' @field can_redo Whether there are any redo operations available
-#' @field undo_size Get the number of undo operations
-#' @field redo_size Get the number of redo operations
+#' This is the recommended way to create a manager. It is equivalent to
+#' `UndoManager$new()`, which is also available for anyone who wants to work
+#' with the [R6][R6::R6Class] class directly, such as to subclass it.
+#'
+#' A manager is an R6 object, so it has reference semantics: its methods modify
+#' the manager in place instead of returning a modified copy, and assigning a
+#' manager to a second variable does not copy it.
+#'
+#' @param type The permitted classes of the items (`NULL` to allow any
+#' object). An item is accepted when any of these classes appears among
+#' the classes R would dispatch on, so `"numeric"` also accepts integers
+#' and numeric matrices.
+#' @param allow_null Whether `NULL` values are allowed. Only used when
+#' `type` is given; an untyped manager accepts any object, including `NULL`.
+#' @param max_size The maximum number of items to keep. Once the history
+#' grows past this, the oldest items are dropped. Use `Inf` for no limit.
+#' @return A new [UndoManager] object.
+#' @seealso [UndoManager] for the full list of methods and active bindings.
 #' @examples
-#' nums <- UndoManager$new()
+#' nums <- undomanager()
 #' nums$do(5)
 #' nums$do(7)
 #' nums$do(10)
@@ -19,7 +31,44 @@
 #' nums$redo()$value
 #'
 #' # operations return the manager, so they can be chained
-#' UndoManager$new()$do(1)$do(2)$do(3)$undo(2)$value
+#' undomanager()$do(1)$do(2)$do(3)$undo(2)$value
+#'
+#' undomanager(type = "numeric")
+#' undomanager(type = "numeric", allow_null = TRUE)
+#' undomanager(max_size = 10)
+#' @export
+undomanager <- function(type = NULL, allow_null = FALSE, max_size = Inf) {
+  UndoManager$new(type = type, allow_null = allow_null, max_size = max_size)
+}
+
+#' Undo/Redo manager
+#'
+#' @description
+#' With the undo manager, you can manage the history of an object by
+#' using undo and redo operations.
+#'
+#' Managers are usually created with [undomanager()] rather than by calling
+#' `UndoManager$new()` directly. The class itself is exported for anyone who
+#' wants to work with it directly, such as to subclass it.
+#'
+#' @field value Get the value
+#' @field is_empty Whether the manager holds no value at all
+#' @field can_undo Whether there are any undo operations available
+#' @field can_redo Whether there are any redo operations available
+#' @field undo_size Get the number of undo operations
+#' @field redo_size Get the number of redo operations
+#' @seealso [undomanager()], the recommended way to create a manager.
+#' @rdname UndoManager-class
+#' @examples
+#' nums <- undomanager()
+#' nums$do(5)
+#' nums$do(7)
+#' nums$do(10)
+#' nums$undo()$value
+#' nums$redo()$value
+#'
+#' # operations return the manager, so they can be chained
+#' undomanager()$do(1)$do(2)$do(3)$undo(2)$value
 #' @export
 UndoManager <- R6::R6Class(
   "UndoManager",
@@ -80,7 +129,8 @@ UndoManager <- R6::R6Class(
 
     #' @description
     #' Create a new undo manager. The manager starts out empty; the first
-    #' call to `do()` gives it a value.
+    #' call to `do()` gives it a value. Most users should call
+    #' [undomanager()] instead, which is equivalent.
     #' @param type The permitted classes of the items (`NULL` to allow any
     #' object). An item is accepted when any of these classes appears among
     #' the classes R would dispatch on, so `"numeric"` also accepts integers
@@ -129,7 +179,7 @@ UndoManager <- R6::R6Class(
     #' @return A shiny reactive expression that returns the manager.
     #' @examples
     #' if (requireNamespace("shiny", quietly = TRUE)) {
-    #'   nums <- UndoManager$new()$do(5)
+    #'   nums <- undomanager()$do(5)
     #'   rx <- nums$reactive()
     #'   shiny::isolate(rx()$value)
     #' }
@@ -153,7 +203,7 @@ UndoManager <- R6::R6Class(
     #' @param ... Not used.
     #' @return The manager, invisibly.
     #' @examples
-    #' UndoManager$new()$do(5)$do(7)$do(10)$undo()$print()
+    #' undomanager()$do(5)$do(7)$do(10)$undo()$print()
     print = function(...) {
 
       if (self$is_empty) {
@@ -207,7 +257,7 @@ UndoManager <- R6::R6Class(
     #' performed. Use `Inf` to undo the entire history.
     #' @return The manager, invisibly.
     #' @examples
-    #' nums <- UndoManager$new()$do(5)$do(7)$do(10)
+    #' nums <- undomanager()$do(5)$do(7)$do(10)
     #' nums$undo()$value
     #' nums$undo(Inf)$value
     undo = function(n = 1) {
@@ -236,7 +286,7 @@ UndoManager <- R6::R6Class(
     #' performed. Use `Inf` to redo the entire history.
     #' @return The manager, invisibly.
     #' @examples
-    #' nums <- UndoManager$new()$do(5)$do(7)$do(10)$undo(2)
+    #' nums <- undomanager()$do(5)$do(7)$do(10)$undo(2)
     #' nums$redo()$value
     #' nums$redo(Inf)$value
     redo = function(n = 1) {
@@ -263,7 +313,7 @@ UndoManager <- R6::R6Class(
     #' one was given.
     #' @return The manager, invisibly.
     #' @examples
-    #' nums <- UndoManager$new()
+    #' nums <- undomanager()
     #' nums$do(5)
     #' nums$do(7)$value
     #' nums$undo()$do(99)$redo_size
@@ -312,7 +362,7 @@ UndoManager <- R6::R6Class(
     #' the manager empty.
     #' @return The manager, invisibly.
     #' @examples
-    #' nums <- UndoManager$new()$do(5)$do(7)
+    #' nums <- undomanager()$do(5)$do(7)
     #' nums$clear()$undo_size
     #' nums$value
     #' nums$clear(clear_value = TRUE)$is_empty

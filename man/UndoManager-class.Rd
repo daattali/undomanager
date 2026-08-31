@@ -6,9 +6,13 @@
 \description{
 With the undo manager, you can manage the history of an object by
 using undo and redo operations.
+
+Managers are usually created with \code{\link[=undomanager]{undomanager()}} rather than by calling
+\code{UndoManager$new()} directly. The class itself is exported for anyone who
+wants to work with it directly, such as to subclass it.
 }
 \examples{
-nums <- UndoManager$new()
+nums <- undomanager()
 nums$do(5)
 nums$do(7)
 nums$do(10)
@@ -16,7 +20,7 @@ nums$undo()$value
 nums$redo()$value
 
 # operations return the manager, so they can be chained
-UndoManager$new()$do(1)$do(2)$do(3)$undo(2)$value
+undomanager()$do(1)$do(2)$do(3)$undo(2)$value
 
 ## ------------------------------------------------
 ## Method `UndoManager$new()`
@@ -32,7 +36,7 @@ UndoManager$new(max_size = 10)
 ## ------------------------------------------------
 
 if (requireNamespace("shiny", quietly = TRUE)) {
-  nums <- UndoManager$new()$do(5)
+  nums <- undomanager()$do(5)
   rx <- nums$reactive()
   shiny::isolate(rx()$value)
 }
@@ -41,13 +45,13 @@ if (requireNamespace("shiny", quietly = TRUE)) {
 ## Method `UndoManager$print()`
 ## ------------------------------------------------
 
-UndoManager$new()$do(5)$do(7)$do(10)$undo()$print()
+undomanager()$do(5)$do(7)$do(10)$undo()$print()
 
 ## ------------------------------------------------
 ## Method `UndoManager$undo()`
 ## ------------------------------------------------
 
-nums <- UndoManager$new()$do(5)$do(7)$do(10)
+nums <- undomanager()$do(5)$do(7)$do(10)
 nums$undo()$value
 nums$undo(Inf)$value
 
@@ -55,7 +59,7 @@ nums$undo(Inf)$value
 ## Method `UndoManager$redo()`
 ## ------------------------------------------------
 
-nums <- UndoManager$new()$do(5)$do(7)$do(10)$undo(2)
+nums <- undomanager()$do(5)$do(7)$do(10)$undo(2)
 nums$redo()$value
 nums$redo(Inf)$value
 
@@ -63,7 +67,7 @@ nums$redo(Inf)$value
 ## Method `UndoManager$do()`
 ## ------------------------------------------------
 
-nums <- UndoManager$new()
+nums <- undomanager()
 nums$do(5)
 nums$do(7)$value
 nums$undo()$do(99)$redo_size
@@ -72,10 +76,13 @@ nums$undo()$do(99)$redo_size
 ## Method `UndoManager$clear()`
 ## ------------------------------------------------
 
-nums <- UndoManager$new()$do(5)$do(7)
+nums <- undomanager()$do(5)$do(7)
 nums$clear()$undo_size
 nums$value
 nums$clear(clear_value = TRUE)$is_empty
+}
+\seealso{
+\code{\link[=undomanager]{undomanager()}}, the recommended way to create a manager.
 }
 \section{Active bindings}{
   \if{html}{\out{<div class="r6-active-bindings">}}
@@ -111,7 +118,8 @@ nums$clear(clear_value = TRUE)$is_empty
 \if{latex}{\out{\hypertarget{method-UndoManager-initialize}{}}}
 \subsection{\code{UndoManager$new()}}{
   Create a new undo manager. The manager starts out empty; the first
-call to \code{do()} gives it a value.
+call to \code{do()} gives it a value. Most users should call
+\code{\link[=undomanager]{undomanager()}} instead, which is equivalent.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{UndoManager$new(type = NULL, allow_null = FALSE, max_size = Inf)}
@@ -163,7 +171,7 @@ changes, and calling it returns the manager itself.
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
     \preformatted{if (requireNamespace("shiny", quietly = TRUE)) {
-  nums <- UndoManager$new()$do(5)
+  nums <- undomanager()$do(5)
   rx <- nums$reactive()
   shiny::isolate(rx()$value)
 }
@@ -196,7 +204,7 @@ and redo history.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
-    \preformatted{UndoManager$new()$do(5)$do(7)$do(10)$undo()$print()
+    \preformatted{undomanager()$do(5)$do(7)$do(10)$undo()$print()
 }
     \if{html}{\out{</div>}}
   }
@@ -227,7 +235,7 @@ performed. Use \code{Inf} to undo the entire history.}
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
-    \preformatted{nums <- UndoManager$new()$do(5)$do(7)$do(10)
+    \preformatted{nums <- undomanager()$do(5)$do(7)$do(10)
 nums$undo()$value
 nums$undo(Inf)$value
 }
@@ -261,7 +269,7 @@ performed. Use \code{Inf} to redo the entire history.}
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
-    \preformatted{nums <- UndoManager$new()$do(5)$do(7)$do(10)$undo(2)
+    \preformatted{nums <- undomanager()$do(5)$do(7)$do(10)$undo(2)
 nums$redo()$value
 nums$redo(Inf)$value
 }
@@ -293,7 +301,7 @@ one was given.}
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
-    \preformatted{nums <- UndoManager$new()
+    \preformatted{nums <- undomanager()
 nums$do(5)
 nums$do(7)$value
 nums$undo()$do(99)$redo_size
@@ -325,7 +333,7 @@ the manager empty.}
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
-    \preformatted{nums <- UndoManager$new()$do(5)$do(7)
+    \preformatted{nums <- undomanager()$do(5)$do(7)
 nums$clear()$undo_size
 nums$value
 nums$clear(clear_value = TRUE)$is_empty

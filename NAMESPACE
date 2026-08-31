@@ -2,6 +2,7 @@
 
 S3method(all.equal,UndoManager)
 export(UndoManager)
+export(undomanager)
 importFrom(R6,R6Class)
 importFrom(checkmate,
   test_character,
