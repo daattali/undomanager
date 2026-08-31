@@ -8,37 +8,74 @@ With the undo manager, you can manage the history of an object by
 using undo and redo operations.
 }
 \examples{
-TODO
+nums <- UndoManager$new()
+nums$do(5)
+nums$do(7)
+nums$do(10)
+nums$undo()$value
+nums$redo()$value
+
+# operations return the manager, so they can be chained
+UndoManager$new()$do(1)$do(2)$do(3)$undo(2)$value
 
 ## ------------------------------------------------
 ## Method `UndoManager$new()`
 ## ------------------------------------------------
 
-TODO
+UndoManager$new()
+UndoManager$new(type = "numeric")
+UndoManager$new(type = "numeric", allow_null = TRUE)
+UndoManager$new(max_size = 10)
+
+## ------------------------------------------------
+## Method `UndoManager$reactive()`
+## ------------------------------------------------
+
+if (requireNamespace("shiny", quietly = TRUE)) {
+  nums <- UndoManager$new()$do(5)
+  rx <- nums$reactive()
+  shiny::isolate(rx()$value)
+}
 
 ## ------------------------------------------------
 ## Method `UndoManager$print()`
 ## ------------------------------------------------
 
-TODO
+UndoManager$new()$do(5)$do(7)$do(10)$undo()$print()
 
 ## ------------------------------------------------
 ## Method `UndoManager$undo()`
 ## ------------------------------------------------
 
-TODO
+nums <- UndoManager$new()$do(5)$do(7)$do(10)
+nums$undo()$value
+nums$undo(Inf)$value
 
 ## ------------------------------------------------
 ## Method `UndoManager$redo()`
 ## ------------------------------------------------
 
-TODO
+nums <- UndoManager$new()$do(5)$do(7)$do(10)$undo(2)
+nums$redo()$value
+nums$redo(Inf)$value
 
 ## ------------------------------------------------
 ## Method `UndoManager$do()`
 ## ------------------------------------------------
 
-TODO
+nums <- UndoManager$new()
+nums$do(5)
+nums$do(7)$value
+nums$undo()$do(99)$redo_size
+
+## ------------------------------------------------
+## Method `UndoManager$clear()`
+## ------------------------------------------------
+
+nums <- UndoManager$new()$do(5)$do(7)
+nums$clear()$undo_size
+nums$value
+nums$clear(clear_value = TRUE)$is_empty
 }
 \section{Active bindings}{
   \if{html}{\out{<div class="r6-active-bindings">}}
@@ -73,7 +110,8 @@ TODO
 \if{html}{\out{<a id="method-UndoManager-initialize"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-initialize}{}}}
 \subsection{\code{UndoManager$new()}}{
-  TODO
+  Create a new undo manager. The manager starts out empty; the first
+call to \code{do()} gives it a value.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{UndoManager$new(type = NULL, allow_null = FALSE, max_size = Inf)}
@@ -82,20 +120,26 @@ TODO
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{type}}{The permitted classes of the objects (\code{NULL} to allow any object)}
+      \item{\code{type}}{The permitted classes of the items (\code{NULL} to allow any
+object). An item is accepted when any of these classes appears among
+the classes R would dispatch on, so \code{"numeric"} also accepts integers
+and numeric matrices.}
       \item{\code{allow_null}}{Whether \code{NULL} values are allowed. Only used when
-\code{type} is given; an untyped manager always accepts any object including \code{NULL}.}
+\code{type} is given; an untyped manager accepts any object, including \code{NULL}.}
       \item{\code{max_size}}{The maximum number of items to keep. Once the history
-grows past this number, the oldest items are dropped. Use \code{Inf} for no limit.}
+grows past this, the oldest items are dropped. Use \code{Inf} for no limit.}
     }
     \if{html}{\out{</div>}}
   }
   \subsection{Returns}{
-    TODO
+    A new \code{UndoManager} object.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
-    \preformatted{TODO
+    \preformatted{UndoManager$new()
+UndoManager$new(type = "numeric")
+UndoManager$new(type = "numeric", allow_null = TRUE)
+UndoManager$new(max_size = 10)
 }
     \if{html}{\out{</div>}}
   }
@@ -105,9 +149,25 @@ grows past this number, the oldest items are dropped. Use \code{Inf} for no limi
 \if{html}{\out{<a id="method-UndoManager-reactive"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-reactive}{}}}
 \subsection{\code{UndoManager$reactive()}}{
+  Get a shiny reactive for this manager, so that it can be used inside a
+reactive context. The returned reactive invalidates whenever the value
+changes, and calling it returns the manager itself.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{UndoManager$reactive()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A shiny reactive expression that returns the manager.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{if (requireNamespace("shiny", quietly = TRUE)) {
+  nums <- UndoManager$new()$do(5)
+  rx <- nums$reactive()
+  shiny::isolate(rx()$value)
+}
+}
     \if{html}{\out{</div>}}
   }
 }
@@ -116,7 +176,9 @@ grows past this number, the oldest items are dropped. Use \code{Inf} for no limi
 \if{html}{\out{<a id="method-UndoManager-print"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-print}{}}}
 \subsection{\code{UndoManager$print()}}{
-  TODO
+  Print the manager: the classes it accepts, how many undo and redo
+operations are available, the current item, and the items in the undo
+and redo history.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{UndoManager$print(...)}
@@ -125,13 +187,16 @@ grows past this number, the oldest items are dropped. Use \code{Inf} for no limi
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{type}}{The class of the object (\code{NULL} to allow any object)}
+      \item{\code{...}}{Not used.}
     }
     \if{html}{\out{</div>}}
   }
+  \subsection{Returns}{
+    The manager, invisibly.
+  }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
-    \preformatted{TODO
+    \preformatted{UndoManager$new()$do(5)$do(7)$do(10)$undo()$print()
 }
     \if{html}{\out{</div>}}
   }
@@ -141,7 +206,8 @@ grows past this number, the oldest items are dropped. Use \code{Inf} for no limi
 \if{html}{\out{<a id="method-UndoManager-undo"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-undo}{}}}
 \subsection{\code{UndoManager$undo()}}{
-  TODO
+  Move back in the history, making the previous item current. Undoing
+when there is nothing left to undo does nothing.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{UndoManager$undo(n = 1)}
@@ -157,11 +223,13 @@ performed. Use \code{Inf} to undo the entire history.}
     \if{html}{\out{</div>}}
   }
   \subsection{Returns}{
-    TODO
+    The manager, invisibly.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
-    \preformatted{TODO
+    \preformatted{nums <- UndoManager$new()$do(5)$do(7)$do(10)
+nums$undo()$value
+nums$undo(Inf)$value
 }
     \if{html}{\out{</div>}}
   }
@@ -171,7 +239,9 @@ performed. Use \code{Inf} to undo the entire history.}
 \if{html}{\out{<a id="method-UndoManager-redo"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-redo}{}}}
 \subsection{\code{UndoManager$redo()}}{
-  TODO
+  Move forward in the history, reversing an undo. Any redo history is
+discarded as soon as a new item is added with \code{do()}. Redoing when
+there is nothing left to redo does nothing.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{UndoManager$redo(n = 1)}
@@ -187,11 +257,13 @@ performed. Use \code{Inf} to redo the entire history.}
     \if{html}{\out{</div>}}
   }
   \subsection{Returns}{
-    TODO
+    The manager, invisibly.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
-    \preformatted{TODO
+    \preformatted{nums <- UndoManager$new()$do(5)$do(7)$do(10)$undo(2)
+nums$redo()$value
+nums$redo(Inf)$value
 }
     \if{html}{\out{</div>}}
   }
@@ -201,7 +273,8 @@ performed. Use \code{Inf} to redo the entire history.}
 \if{html}{\out{<a id="method-UndoManager-do"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-do}{}}}
 \subsection{\code{UndoManager$do()}}{
-  TODO
+  Add an item and make it the current value. The item that was current
+becomes the most recent undo, and any redo history is discarded.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{UndoManager$do(item)}
@@ -210,16 +283,20 @@ performed. Use \code{Inf} to redo the entire history.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{type}}{The class of the object (\code{NULL} to allow any object)}
+      \item{\code{item}}{The item to add. It must satisfy the manager's \code{type}, if
+one was given.}
     }
     \if{html}{\out{</div>}}
   }
   \subsection{Returns}{
-    TODO
+    The manager, invisibly.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
-    \preformatted{TODO
+    \preformatted{nums <- UndoManager$new()
+nums$do(5)
+nums$do(7)$value
+nums$undo()$do(99)$redo_size
 }
     \if{html}{\out{</div>}}
   }
@@ -229,9 +306,30 @@ performed. Use \code{Inf} to redo the entire history.}
 \if{html}{\out{<a id="method-UndoManager-clear"></a>}}
 \if{latex}{\out{\hypertarget{method-UndoManager-clear}{}}}
 \subsection{\code{UndoManager$clear()}}{
+  Forget the undo and redo history, keeping the current value.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{UndoManager$clear(clear_value = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{clear_value}}{Whether to also discard the current value, leaving
+the manager empty.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    The manager, invisibly.
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{nums <- UndoManager$new()$do(5)$do(7)
+nums$clear()$undo_size
+nums$value
+nums$clear(clear_value = TRUE)$is_empty
+}
     \if{html}{\out{</div>}}
   }
 }

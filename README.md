@@ -159,6 +159,7 @@ server <- function(input, output, session) {
   undoredo <- UndoManager$new(type = c("numeric"))$reactive()
   
   observeEvent(input$save, {
+    req(input$num)
     undoredo()$do(input$num)
   })
   observeEvent(input$undo, {

@@ -11,7 +11,15 @@
 #' @field undo_size Get the number of undo operations
 #' @field redo_size Get the number of redo operations
 #' @examples
-#' TODO
+#' nums <- UndoManager$new()
+#' nums$do(5)
+#' nums$do(7)
+#' nums$do(10)
+#' nums$undo()$value
+#' nums$redo()$value
+#'
+#' # operations return the manager, so they can be chained
+#' UndoManager$new()$do(1)$do(2)$do(3)$undo(2)$value
 #' @export
 UndoManager <- R6::R6Class(
   "UndoManager",
@@ -71,15 +79,22 @@ UndoManager <- R6::R6Class(
   public = list(
 
     #' @description
-    #' TODO
-    #' @param type The permitted classes of the objects (`NULL` to allow any object)
+    #' Create a new undo manager. The manager starts out empty; the first
+    #' call to `do()` gives it a value.
+    #' @param type The permitted classes of the items (`NULL` to allow any
+    #' object). An item is accepted when any of these classes appears among
+    #' the classes R would dispatch on, so `"numeric"` also accepts integers
+    #' and numeric matrices.
     #' @param allow_null Whether `NULL` values are allowed. Only used when
-    #' `type` is given; an untyped manager always accepts any object including `NULL`.
+    #' `type` is given; an untyped manager accepts any object, including `NULL`.
     #' @param max_size The maximum number of items to keep. Once the history
-    #' grows past this number, the oldest items are dropped. Use `Inf` for no limit.
+    #' grows past this, the oldest items are dropped. Use `Inf` for no limit.
+    #' @return A new `UndoManager` object.
     #' @examples
-    #' TODO
-    #' @return TODO
+    #' UndoManager$new()
+    #' UndoManager$new(type = "numeric")
+    #' UndoManager$new(type = "numeric", allow_null = TRUE)
+    #' UndoManager$new(max_size = 10)
     initialize = function(type = NULL, allow_null = FALSE, max_size = Inf) {
       if (!is.null(type) &&
           !checkmate::test_character(type, any.missing = FALSE, unique = TRUE,
@@ -107,6 +122,17 @@ UndoManager <- R6::R6Class(
       invisible(self)
     },
 
+    #' @description
+    #' Get a shiny reactive for this manager, so that it can be used inside a
+    #' reactive context. The returned reactive invalidates whenever the value
+    #' changes, and calling it returns the manager itself.
+    #' @return A shiny reactive expression that returns the manager.
+    #' @examples
+    #' if (requireNamespace("shiny", quietly = TRUE)) {
+    #'   nums <- UndoManager$new()$do(5)
+    #'   rx <- nums$reactive()
+    #'   shiny::isolate(rx()$value)
+    #' }
     reactive = function() {
       # Idea borrowed from Winston Chang
       # https://community.rstudio.com/t/good-way-to-create-a-reactive-aware-r6-class
@@ -121,10 +147,13 @@ UndoManager <- R6::R6Class(
     },
 
     #' @description
-    #' TODO
-    #' @param type The class of the object (`NULL` to allow any object)
+    #' Print the manager: the classes it accepts, how many undo and redo
+    #' operations are available, the current item, and the items in the undo
+    #' and redo history.
+    #' @param ... Not used.
+    #' @return The manager, invisibly.
     #' @examples
-    #' TODO
+    #' UndoManager$new()$do(5)$do(7)$do(10)$undo()$print()
     print = function(...) {
 
       if (self$is_empty) {
@@ -171,13 +200,16 @@ UndoManager <- R6::R6Class(
     },
 
     #' @description
-    #' TODO
+    #' Move back in the history, making the previous item current. Undoing
+    #' when there is nothing left to undo does nothing.
     #' @param n The number of undo operations to perform. If `n` is larger
     #' than the number of available undo operations, all of them are
     #' performed. Use `Inf` to undo the entire history.
+    #' @return The manager, invisibly.
     #' @examples
-    #' TODO
-    #' @return TODO
+    #' nums <- UndoManager$new()$do(5)$do(7)$do(10)
+    #' nums$undo()$value
+    #' nums$undo(Inf)$value
     undo = function(n = 1) {
       if (!checkmate::test_count(n) && !identical(n, Inf)) {
         stop("undo: `n` must be a single non-negative whole number, or `Inf`",
@@ -196,13 +228,17 @@ UndoManager <- R6::R6Class(
     },
 
     #' @description
-    #' TODO
+    #' Move forward in the history, reversing an undo. Any redo history is
+    #' discarded as soon as a new item is added with `do()`. Redoing when
+    #' there is nothing left to redo does nothing.
     #' @param n The number of redo operations to perform. If `n` is larger
     #' than the number of available redo operations, all of them are
     #' performed. Use `Inf` to redo the entire history.
+    #' @return The manager, invisibly.
     #' @examples
-    #' TODO
-    #' @return TODO
+    #' nums <- UndoManager$new()$do(5)$do(7)$do(10)$undo(2)
+    #' nums$redo()$value
+    #' nums$redo(Inf)$value
     redo = function(n = 1) {
       if (!checkmate::test_count(n) && !identical(n, Inf)) {
         stop("redo: `n` must be a single non-negative whole number, or `Inf`",
@@ -221,11 +257,16 @@ UndoManager <- R6::R6Class(
     },
 
     #' @description
-    #' TODO
-    #' @param type The class of the object (`NULL` to allow any object)
+    #' Add an item and make it the current value. The item that was current
+    #' becomes the most recent undo, and any redo history is discarded.
+    #' @param item The item to add. It must satisfy the manager's `type`, if
+    #' one was given.
+    #' @return The manager, invisibly.
     #' @examples
-    #' TODO
-    #' @return TODO
+    #' nums <- UndoManager$new()
+    #' nums$do(5)
+    #' nums$do(7)$value
+    #' nums$undo()$do(99)$redo_size
     do = function(item) {
       if (missing(item)) {
         stop("do: `item` must be provided", call. = FALSE)
@@ -265,6 +306,16 @@ UndoManager <- R6::R6Class(
       invisible(self)
     },
 
+    #' @description
+    #' Forget the undo and redo history, keeping the current value.
+    #' @param clear_value Whether to also discard the current value, leaving
+    #' the manager empty.
+    #' @return The manager, invisibly.
+    #' @examples
+    #' nums <- UndoManager$new()$do(5)$do(7)
+    #' nums$clear()$undo_size
+    #' nums$value
+    #' nums$clear(clear_value = TRUE)$is_empty
     clear = function(clear_value = FALSE) {
       if (!checkmate::test_logical(clear_value, any.missing = FALSE, len = 1, null.ok = FALSE)) {
         stop("clear: `clear_value` must be either `TRUE` or `FALSE`.", call. = FALSE)
