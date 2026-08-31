@@ -228,8 +228,8 @@ server <- function(input, output, session) {
     undoredo()$clear()
   })
   observe({
-    shinyjs::toggleState("undo", undoredo()$can_undo > 0)
-    shinyjs::toggleState("redo", undoredo()$can_redo > 0)
+    shinyjs::toggleState("undo", undoredo()$can_undo)
+    shinyjs::toggleState("redo", undoredo()$can_redo)
   })
   output$stack <- renderPrint({
     undoredo()
