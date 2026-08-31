@@ -19,6 +19,8 @@
 
 ---
 
+<img src="inst/img/hex.png" width="170" align="right"/>
+
 {undomanager} lets you track the history of any R object and move through it with undo and redo operations. Anything can be stored, from a single number to a data frame or an entire application state. A manager can restrict its history to specific classes and cap how many items it keeps, and it can be reactive to integrate with 'Shiny'.
 
 **Need Shiny help? [I'm available for consulting](https://attalitech.com/).**<br/>
