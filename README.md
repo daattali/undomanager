@@ -32,7 +32,18 @@
   </a>
 </p>
 
-### Example
+# Table of contents
+
+- [Example](#example)
+- [Installation](#install)
+- [Chaining](#chaining)
+- [Restricting the type of items](#types)
+- [Undoing or redoing multiple steps](#multiple)
+- [Storing `NULL`](#null)
+- [Objects with reference semantics](#reference)
+- [Using with shiny](#shiny)
+
+<h2 id="example">Example</h2>
 
 ```r
 nums <- UndoManager$new()
@@ -65,7 +76,22 @@ print(nums)
 [1] 12
 ```
 
-### Chaining
+<h2 id="install">Installation</h2>
+
+**For most users:** To install the stable CRAN version:
+
+```r
+install.packages("undomanager")
+```
+
+**For advanced users:** To install the latest development version from GitHub:
+
+```r
+install.packages("remotes")
+remotes::install_github("daattali/undomanager")
+```
+
+<h2 id="chaining">Chaining</h2>
 
 You can also chain all the operations; the above is equivalent to:
 
@@ -73,7 +99,7 @@ You can also chain all the operations; the above is equivalent to:
 UndoManager$new()$do(5)$do(7)$do(10)$do(12)$undo()$undo()$redo()
 ```
 
-### Restricting the type of items
+<h2 id="types">Restricting the type of items</h2>
 
 By default an UndoManager accepts any object. Pass a `type` to `new()` to restrict it to one or more classes:
 
@@ -94,7 +120,7 @@ items$do(TRUE)
 #> Error: do: The provided item must have class <numeric>|<character>
 ```
 
-### Undoing or redoing multiple steps
+<h2 id="multiple">Undoing or redoing multiple steps</h2>
 
 `undo()` and `redo()` accept an `n` argument to move more than one step at a time. If `n` is larger than the number of available operations, they stop at the end of the history. Use `Inf` to go all the way.
 
@@ -108,7 +134,7 @@ nums$redo(Inf)$value
 #> [1] 12
 ```
 
-### Storing `NULL`
+<h2 id="null">Storing `NULL`</h2>
 
 `NULL` is a value like any other, so it can be stored and undone:
 
@@ -144,7 +170,7 @@ nums$do(5)
 nums$do(NULL)
 ```
 
-### Objects with reference semantics
+<h2 id="reference">Objects with reference semantics</h2>
 
 Items are stored exactly as they are given, without being copied. For most common objects (vectors, lists, data frames), R's copy-on-modify behaviour means the history is effectively a snapshot, so changing your own copy afterwards doesn't affect it.
 
@@ -168,7 +194,7 @@ hist$do(as.environment(as.list(env, all.names = TRUE)))  # environments
 hist$do(obj$clone(deep = TRUE))                          # R6 objects
 ```
 
-### Using with shiny
+<h2 id="shiny">Using with shiny</h2>
 
 {undomanager} can also be fully reactive and integrate with shiny smoothly. You just need to call `$reactive()` on the UndoManager object and use it as a reactive variable:
 
