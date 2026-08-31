@@ -1,6 +1,34 @@
-# undomanager
+<h3 align="center">undomanager</h3>
+<h4 align="center">
+  ↩️ Manage the history of any object with undo/redo operations
+  <br><br>
+  by <a href="https://deanattali.com">Dean Attali</a>
+</h4>
 
-General framework to manage the history of any object, allowing undo and redo operations.
+<p align="center">
+  <a href="https://github.com/daattali/undomanager/actions">
+    <img src="https://github.com/daattali/undomanager/workflows/R-CMD-check/badge.svg" alt="R build status" />
+  </a>
+  <a href="https://cran.r-project.org/package=undomanager">
+    <img src="https://www.r-pkg.org/badges/version/undomanager" alt="CRAN version" />
+  </a>
+  <a href="https://paypal.me/daattali/20">
+    <img src="http://i.imgur.com/vCIGFrH.png" />
+  </a>
+</p>
+
+---
+
+{undomanager} lets you track the history of any R object and move through it with undo and redo operations. Anything can be stored, from a single number to a data frame or an entire application state. A manager can restrict its history to specific classes and cap how many items it keeps, and it can be reactive to integrate with 'Shiny'.
+
+**Need Shiny help? [I'm available for consulting](https://attalitech.com/).**<br/>
+**If you find {undomanager} useful, please consider [supporting my work](https://github.com/sponsors/daattali)! ❤**
+
+<p align="center">
+  <a style="display: inline-block;" href="https://github.com/sponsors/daattali">
+    <img height="35" src="https://i.imgur.com/034B8vq.png" />
+  </a>
+</p>
 
 ### Example
 
