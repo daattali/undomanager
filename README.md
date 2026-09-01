@@ -34,7 +34,8 @@
 
 # Table of contents
 
-- [Example](#example)
+- [How to use](#example)
+- [Sponsors 🏆](#sponsors)
 - [Installation](#install)
 - [Chaining](#chaining)
 - [Restricting the type of items](#types)
@@ -43,7 +44,9 @@
 - [Objects with reference semantics](#reference)
 - [Using with shiny](#shiny)
 
-<h2 id="example">Example</h2>
+<h2 id="example">How to use</h2>
+
+After creating a new manager with `undomanager()`, the main actions are `$do(item)`, `$undo()`, `$redo()`.
 
 ```r
 nums <- undomanager()
@@ -75,6 +78,10 @@ print(nums)
 1.
 [1] 12
 ```
+
+<h2 id="sponsors">Sponsors 🏆</h2>
+
+Developed, in part, as a component of [stanpumpR](https://stanpumpR.io) (see [https://github.com/StevenLShafer/stanpumpR](https://github.com/StevenLShafer/stanpumpR)).
 
 <h2 id="install">Installation</h2>
 
