@@ -79,6 +79,16 @@ print(nums)
 [1] 12
 ```
 
+Use `$value` to get the current item from the manager.
+
+```r
+> nums$value
+[1] 10
+> nums$undo()
+> nums$value
+[1] 7
+```
+
 <h2 id="sponsors">Sponsors 🏆</h2>
 
 Developed, in part, as a component of [stanpumpR](https://stanpumpR.io) (see [https://github.com/StevenLShafer/stanpumpR](https://github.com/StevenLShafer/stanpumpR)).
