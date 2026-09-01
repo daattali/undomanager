@@ -83,6 +83,9 @@ print(nums)
 
 Developed, in part, as a component of [stanpumpR](https://stanpumpR.io) (see [https://github.com/StevenLShafer/stanpumpR](https://github.com/StevenLShafer/stanpumpR)).
 
+[Become a sponsor for
+{undomanager}\!](https://github.com/sponsors/daattali/sponsorships?tier_id=39856)
+
 <h2 id="install">Installation</h2>
 
 **For most users:** To install the stable CRAN version:
