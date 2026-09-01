@@ -87,11 +87,11 @@ undomanager()$do(5)$do(7)$do(10)$do(12)$undo()$undo()$redo()
 Use `$value` to get the current item from the manager.
 
 ```r
-> nums$value
-[1] 10
-> nums$undo()
-> nums$value
-[1] 7
+nums$value
+#> [1] 10
+nums$undo()
+nums$value
+#> [1] 7
 ```
 
 <h2 id="sponsors">Sponsors 🏆</h2>
