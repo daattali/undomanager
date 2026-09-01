@@ -35,9 +35,9 @@
 # Table of contents
 
 - [How to use](#example)
+- [Chaining](#chaining)
 - [Sponsors 🏆](#sponsors)
 - [Installation](#install)
-- [Chaining](#chaining)
 - [Restricting the type of items](#types)
 - [Undoing or redoing multiple steps](#multiple)
 - [Storing `NULL`](#null)
@@ -89,6 +89,14 @@ Use `$value` to get the current item from the manager.
 [1] 7
 ```
 
+<h2 id="chaining">Chaining</h2>
+
+You can also chain all the operations; the above is equivalent to:
+
+```r
+undomanager()$do(5)$do(7)$do(10)$do(12)$undo()$undo()$redo()
+```
+
 <h2 id="sponsors">Sponsors 🏆</h2>
 
 Developed, in part, as a component of [stanpumpR](https://stanpumpR.io) (see [https://github.com/StevenLShafer/stanpumpR](https://github.com/StevenLShafer/stanpumpR)).
@@ -109,14 +117,6 @@ install.packages("undomanager")
 ```r
 install.packages("remotes")
 remotes::install_github("daattali/undomanager")
-```
-
-<h2 id="chaining">Chaining</h2>
-
-You can also chain all the operations; the above is equivalent to:
-
-```r
-undomanager()$do(5)$do(7)$do(10)$do(12)$undo()$undo()$redo()
 ```
 
 <h2 id="types">Restricting the type of items</h2>
