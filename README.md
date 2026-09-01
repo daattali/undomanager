@@ -35,7 +35,6 @@
 # Table of contents
 
 - [How to use](#example)
-- [Chaining](#chaining)
 - [Sponsors 🏆](#sponsors)
 - [Installation](#install)
 - [Restricting the type of items](#types)
@@ -79,6 +78,12 @@ print(nums)
 [1] 12
 ```
 
+You can also **chain** all the operations; the above is equivalent to:
+
+```r
+undomanager()$do(5)$do(7)$do(10)$do(12)$undo()$undo()$redo()
+```
+
 Use `$value` to get the current item from the manager.
 
 ```r
@@ -87,14 +92,6 @@ Use `$value` to get the current item from the manager.
 > nums$undo()
 > nums$value
 [1] 7
-```
-
-<h2 id="chaining">Chaining</h2>
-
-You can also chain all the operations; the above is equivalent to:
-
-```r
-undomanager()$do(5)$do(7)$do(10)$do(12)$undo()$undo()$redo()
 ```
 
 <h2 id="sponsors">Sponsors 🏆</h2>
