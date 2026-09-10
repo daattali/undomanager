@@ -12,7 +12,7 @@
   <a href="https://cran.r-project.org/package=undomanager">
     <img src="https://www.r-pkg.org/badges/version/undomanager" alt="CRAN version" />
   </a>
-  <a href="https://paypal.me/daattali/20">
+  <a href="https://www.paypal.com/paypalme/daattali/20">
     <img src="http://i.imgur.com/vCIGFrH.png" />
   </a>
 </p>
