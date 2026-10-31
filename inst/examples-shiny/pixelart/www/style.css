@@ -1,0 +1,367 @@
+:root {
+  --purple-dark: #2d1b5a;
+  --purple: #7c5cd6;
+  --purple-light: #ede8fb;
+  --yellow: #f1c40f;
+}
+
+html, body {
+  font-size: 16px;
+}
+
+body {
+  padding: 0 20px;
+  background-image: url('maze-white.png');
+  background-color: #fafafa;
+  color: #333;
+}
+
+#header {
+  text-align: center;
+  color: #fdfdfd;
+  padding: 50px 5px 80px;
+  border-bottom: 1px solid #ddd;
+  margin: 0 -35px 30px;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 2.5vw), 0 100%);
+  background-color: var(--purple);
+  background-image: url('diagonals.png');
+}
+
+#pagetitle {
+  font-size: 3.2em;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+#subtitle {
+  font-size: 1.5em;
+  margin-bottom: 8px;
+  line-height: 1.1;
+}
+
+#subsubtitle {
+  font-size: 1.1em;
+}
+
+#subsubtitle a {
+  color: #fdfdfd;
+  text-decoration: underline;
+}
+
+@media only screen and (max-height: 800px) {
+  #header {
+    padding: 15px 5px 60px;
+  }
+}
+
+@media only screen and (max-width: 979px) {
+  #header {
+    padding: 15px 5px 40px;
+  }
+
+  #pagetitle {
+    font-size: 2.6em;
+  }
+
+  #subtitle {
+    font-size: 1.3em;
+  }
+
+  #subsubtitle {
+    font-size: 1em;
+  }
+}
+
+#main {
+  max-width: 1000px;
+  margin: 0 auto 15px;
+}
+
+#intro {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.pa-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* The history card is as tall as the editor next to it, and the log fills whatever space is left */
+.pa-history {
+  flex: 1 1 320px;
+  min-width: 300px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+}
+
+.pa-log {
+  flex: 1 1 0;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pa-log pre {
+  flex: 1 1 0;
+  min-height: 0;
+  margin-bottom: 0;
+  overflow-y: auto;
+}
+
+.pa-card {
+  background: #fff;
+  border: 1px solid #e3e0ee;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(45, 27, 90, 0.08);
+  padding: 16px 18px;
+  margin-bottom: 24px;
+}
+
+.pa-card h4 {
+  margin-top: 0;
+  color: var(--purple-dark);
+  font-weight: bold;
+}
+
+.pa-card pre {
+  background: var(--purple-light);
+  border: none;
+  color: var(--purple-dark);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.pa-editor {
+  flex: 0 1 auto;
+  max-width: 100%;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.pa-controls {
+  flex: 0 0 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pa-actions,
+.pa-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pa-tools {
+  border-top: 2px solid #d6cff0;
+  padding-top: 16px;
+}
+
+.pa-controls .btn {
+  width: 100%;
+}
+
+#pa-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--size), 1fr);
+  grid-auto-rows: 1fr;
+  aspect-ratio: 1;
+  border: 3px solid var(--purple-dark);
+  border-radius: 4px;
+  width: max(256px, min(420px, 100vh - 250px));
+  max-width: 100%;
+  user-select: none;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+#pa-grid[data-tool="paint"] {
+  cursor: url("cursor-paint.svg") 3 25, crosshair;
+}
+
+#pa-grid[data-tool="erase"] {
+  cursor: url("cursor-erase.svg") 6 21, crosshair;
+}
+
+#pa-grid[data-tool="fill"] {
+  cursor: url("cursor-fill.svg") 3 25, crosshair;
+}
+
+.pa-cell {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.pa-cell:hover {
+  filter: brightness(0.9);
+}
+
+.pa-toolbar {
+  margin: 4px 0 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-primary,
+.btn-primary:focus {
+  background-color: var(--purple);
+  border-color: var(--purple);
+}
+
+.btn-primary:hover,
+.btn-primary:active {
+  background-color: var(--purple-dark);
+  border-color: var(--purple-dark);
+}
+
+.pa-controls .form-group {
+  margin: 0;
+}
+
+.pa-controls .shiny-options-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.pa-controls .radio-inline {
+  margin: 0;
+  padding: 0;
+}
+
+.pa-controls .radio-inline input {
+  position: absolute;
+  opacity: 0;
+  margin: 0;
+}
+
+.pa-controls .radio-inline span {
+  display: block;
+  padding: 6px 16px;
+  border: 1px solid var(--purple);
+  color: var(--purple);
+  text-align: center;
+  cursor: pointer;
+}
+
+.pa-controls .radio-inline:first-child span {
+  border-radius: 4px 4px 0 0;
+}
+
+.pa-controls .radio-inline:last-child span {
+  border-radius: 0 0 4px 4px;
+}
+
+.pa-controls .radio-inline + .radio-inline span {
+  margin-top: -1px;
+}
+
+.pa-controls .radio-inline input:checked + span {
+  background: var(--purple);
+  color: #fff;
+}
+
+@media only screen and (max-width: 640px) {
+  .pa-editor {
+    flex-direction: column;
+  }
+
+  .pa-controls {
+    flex: none;
+    width: 100%;
+  }
+
+  .pa-actions,
+  .pa-tools {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .pa-controls .btn {
+    width: auto;
+  }
+
+  .pa-controls .shiny-options-group {
+    flex-direction: row;
+  }
+
+  .pa-controls .radio-inline:first-child span {
+    border-radius: 4px 0 0 4px;
+  }
+
+  .pa-controls .radio-inline:last-child span {
+    border-radius: 0 4px 4px 0;
+  }
+
+  .pa-controls .radio-inline + .radio-inline span {
+    margin-top: 0;
+    margin-left: -1px;
+  }
+}
+
+.pa-swatches {
+  display: grid;
+  grid-template-columns: repeat(4, 26px);
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.pa-swatch {
+  width: 26px;
+  height: 26px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #aaa;
+  cursor: pointer;
+  padding: 0;
+}
+
+.pa-swatch.active {
+  box-shadow: 0 0 0 3px var(--purple);
+}
+
+/* History timeline */
+
+.pa-timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 8px 0;
+}
+
+.pa-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #888;
+  background: #fff;
+  padding: 0;
+  cursor: pointer;
+}
+
+.pa-dot:hover {
+  transform: scale(1.2);
+}
+
+.pa-dot.undo {
+  background: #457B9D;
+  border-color: #457B9D;
+}
+
+.pa-dot.current {
+  background: var(--yellow);
+  border-color: #000;
+  border-width: 2px;
+}
+
+.pa-dot.redo {
+  border-style: dashed;
+}

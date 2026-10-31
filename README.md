@@ -2,6 +2,8 @@
 <h4 align="center">
   ↩️ Manage the history of any object with undo/redo operations
   <br><br>
+  <a href="https://daattali.com/shiny/undomanager-demo/">Demo</a>
+  &middot;
   by <a href="https://deanattali.com">Dean Attali</a>
 </h4>
 
@@ -42,6 +44,7 @@
 - [Storing `NULL`](#null)
 - [Objects with reference semantics](#reference)
 - [Using with shiny](#shiny)
+- [Demo app](#demo)
 
 <h2 id="example">How to use</h2>
 
@@ -229,7 +232,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  undoredo <- undomanager(type = c("numeric"))$reactive()
+  undoredo <- undomanager(type = "numeric")$reactive()
   
   observeEvent(input$save, {
     req(input$num)
@@ -255,3 +258,13 @@ server <- function(input, output, session) {
 
 shinyApp(ui, server)
 ```
+
+<h2 id="demo">Demo app</h2>
+
+The package includes a small pixel art editor that shows an example of how an undomanager can be used in a real application. Each edit to the canvas is an item in history, and you can undo/redo/jump to any point in the canvas' timeline.
+
+```r
+undomanager::run_example()
+```
+
+The source is in [`inst/examples-shiny/pixelart/app.R`](inst/examples-shiny/pixelart/app.R). You can also [access the demo app online](https://daattali.com/shiny/undomanager-demo/).

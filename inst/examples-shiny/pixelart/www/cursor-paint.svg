@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+  <!-- handle -->
+  <line x1="25" y1="3" x2="13" y2="15" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+  <line x1="25" y1="3" x2="13" y2="15" stroke="#b5733a" stroke-width="4" stroke-linecap="round"/>
+  <!-- bristles; the tip at the bottom-left is the cursor hotspot -->
+  <path d="M9 13 L15 19 C13 24 8 25 3 25 C4 20 5 15 9 13 Z" fill="#2d1b5a" stroke="#fff" stroke-width="2" paint-order="stroke"/>
+</svg>
