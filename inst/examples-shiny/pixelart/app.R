@@ -57,12 +57,14 @@ share <- list(
   title = "{undomanager}",
   url = "https://daattali.com/shiny/undomanager-demo/",
   source = "https://github.com/daattali/undomanager",
-  image = "https://github.com/daattali/undomanager/raw/master/inst/img/social-preview.png",
+  image = "https://daattali.com/shiny/img/undomanager.png",
   description = "Manage the history of any object with undo/redo operations",
   twitter_user = "daattali"
 )
 
 ui <- fluidPage(
+  shinydisconnect::disconnectMessage2(),
+
   title = paste0("{undomanager} ", as.character(utils::packageVersion("undomanager"))),
 
   tags$head(

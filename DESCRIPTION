@@ -24,6 +24,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Suggests: 
     testthat (>= 3.0.0),
-    shiny
+    shiny,
+    shinydisconnect
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
