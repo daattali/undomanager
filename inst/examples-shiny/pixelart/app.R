@@ -55,7 +55,7 @@ apply_stroke <- function(canvas, stroke) {
 
 share <- list(
   title = "{undomanager}",
-  url = "https://github.com/daattali/undomanager",
+  url = "https://daattali.com/shiny/undomanager-demo/",
   source = "https://github.com/daattali/undomanager",
   image = "https://github.com/daattali/undomanager/raw/master/inst/img/social-preview.png",
   description = "Manage the history of any object with undo/redo operations",
