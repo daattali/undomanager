@@ -163,3 +163,79 @@
       [1] 3
       
 
+# UndoManager print can limit how many items are shown on each side
+
+    Code
+      print(x, n = 1)
+    Output
+      <UndoManager> of arbitrary items with 2 undos and 2 redos
+      
+      ### Current item ###
+      [1] 3
+      
+      ### Undo stack ###
+      1.
+      [1] 2
+      
+      ... and 1 more
+      
+      
+      ### Redo stack ###
+      1.
+      [1] 4
+      
+      ... and 1 more
+      
+
+---
+
+    Code
+      print(x, n = 0)
+    Output
+      <UndoManager> of arbitrary items with 2 undos and 2 redos
+      
+      ### Current item ###
+      [1] 3
+      
+      ### Undo stack ###
+      ... and 2 more
+      
+      
+      ### Redo stack ###
+      ... and 2 more
+      
+
+---
+
+    Code
+      print(undomanager()$do(1)$do(2)$do(3)$do(4), n = 1)
+    Output
+      <UndoManager> of arbitrary items with 3 undos and 0 redos
+      
+      ### Current item ###
+      [1] 4
+      
+      ### Undo stack ###
+      1.
+      [1] 3
+      
+      ... and 2 more
+      
+
+---
+
+    Code
+      print(undomanager()$do(1)$do(2)$do(3)$do(4)$undo(3), n = 1)
+    Output
+      <UndoManager> of arbitrary items with 0 undos and 3 redos
+      
+      ### Current item ###
+      [1] 1
+      
+      ### Redo stack ###
+      1.
+      [1] 2
+      
+      ... and 2 more
+      
+

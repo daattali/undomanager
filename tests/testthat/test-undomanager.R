@@ -690,6 +690,37 @@ test_that("UndoManager print shows NULL items", {
   expect_snapshot(print(undomanager()$do(1)$do(NULL)$do(3)$undo()))
 })
 
+test_that("UndoManager print can limit how many items are shown on each side", {
+  # 2 undos (2 and 1) and 2 redos (4 and 5) around the current item 3
+  x <- undomanager()$do(1)$do(2)$do(3)$do(4)$do(5)$undo(2)
+  expect_snapshot(print(x, n = 1))
+  expect_snapshot(print(x, n = 0))
+
+  # the limit applies to each side separately
+  expect_snapshot(print(undomanager()$do(1)$do(2)$do(3)$do(4), n = 1))
+  expect_snapshot(print(undomanager()$do(1)$do(2)$do(3)$do(4)$undo(3), n = 1))
+})
+
+test_that("UndoManager print shows everything when n is large enough", {
+  x <- undomanager()$do(1)$do(2)$do(3)$do(4)$do(5)$undo(2)
+  everything <- capture.output(print(x))
+
+  expect_identical(capture.output(print(x, n = 2)), everything)
+  expect_identical(capture.output(print(x, n = 100)), everything)
+  expect_identical(capture.output(print(x, n = Inf)), everything)
+  expect_false(any(grepl("more", everything)))
+})
+
+test_that("UndoManager print validates n", {
+  x <- undomanager()$do(1)
+  for (bad in list(-1, 1.5, NA, "a", c(1, 2), NULL)) {
+    expect_error(
+      print(x, n = bad),
+      "`n` must be a single non-negative whole number, or `Inf`"
+    )
+  }
+})
+
 test_that("UndoManager reactive returns a cached reactive for the manager", {
   skip_if_not_installed("shiny")
 

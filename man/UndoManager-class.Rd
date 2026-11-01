@@ -45,7 +45,10 @@ if (requireNamespace("shiny", quietly = TRUE)) {
 ## Method `UndoManager$print()`
 ## ------------------------------------------------
 
-undomanager()$do(5)$do(7)$do(10)$undo()$print()
+undomanager()$do(5)$do(7)$do(10)$do(12)$do(45)$undo()$print()
+
+# only show the nearest item on each side of the current one
+undomanager()$do(5)$do(7)$do(10)$do(12)$do(45)$undo()$print(n = 1)
 
 ## ------------------------------------------------
 ## Method `UndoManager$undo()`
@@ -189,12 +192,15 @@ operations are available, the current item, and the items in the undo
 and redo history.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{UndoManager$print(...)}
+    \preformatted{UndoManager$print(n = Inf, ...)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
+      \item{\code{n}}{The maximum number of undo items, and of redo items, to show.
+The items closest to the current one are shown first, and a line says
+how many more were left out. Use \code{Inf} (the default) to show them all.}
       \item{\code{...}}{Not used.}
     }
     \if{html}{\out{</div>}}
@@ -204,7 +210,10 @@ and redo history.
   }
   \subsection{Examples}{
     \if{html}{\out{<div class="r example copy">}}
-    \preformatted{undomanager()$do(5)$do(7)$do(10)$undo()$print()
+    \preformatted{undomanager()$do(5)$do(7)$do(10)$do(12)$do(45)$undo()$print()
+
+# only show the nearest item on each side of the current one
+undomanager()$do(5)$do(7)$do(10)$do(12)$do(45)$undo()$print(n = 1)
 }
     \if{html}{\out{</div>}}
   }

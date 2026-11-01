@@ -200,11 +200,21 @@ UndoManager <- R6::R6Class(
     #' Print the manager: the classes it accepts, how many undo and redo
     #' operations are available, the current item, and the items in the undo
     #' and redo history.
+    #' @param n The maximum number of undo items, and of redo items, to show.
+    #' The items closest to the current one are shown first, and a line says
+    #' how many more were left out. Use `Inf` (the default) to show them all.
     #' @param ... Not used.
     #' @return The manager, invisibly.
     #' @examples
-    #' undomanager()$do(5)$do(7)$do(10)$undo()$print()
-    print = function(...) {
+    #' undomanager()$do(5)$do(7)$do(10)$do(12)$do(45)$undo()$print()
+    #'
+    #' # only show the nearest item on each side of the current one
+    #' undomanager()$do(5)$do(7)$do(10)$do(12)$do(45)$undo()$print(n = 1)
+    print = function(n = Inf, ...) {
+      if (!checkmate::test_count(n) && !identical(n, Inf)) {
+        stop("print: `n` must be a single non-negative whole number, or `Inf`",
+             call. = FALSE)
+      }
 
       if (self$is_empty) {
         cat("Empty ")
@@ -229,19 +239,25 @@ UndoManager <- R6::R6Class(
 
         if (self$undo_size > 0) {
           cat("\n### Undo stack ###\n")
-          for (idx in seq_len(self$undo_size)) {
+          for (idx in seq_len(min(n, self$undo_size))) {
             cat0(idx, ".\n")
             print(private$.store$history[[private$.pos - idx]])
             cat("\n")
+          }
+          if (self$undo_size > n) {
+            cat0("... and ", self$undo_size - n, " more\n\n")
           }
         }
 
         if (self$redo_size > 0) {
           cat("\n### Redo stack ###\n")
-          for (idx in seq_len(self$redo_size)) {
+          for (idx in seq_len(min(n, self$redo_size))) {
             cat0(idx, ".\n")
             print(private$.store$history[[private$.pos + idx]])
             cat("\n")
+          }
+          if (self$redo_size > n) {
+            cat0("... and ", self$redo_size - n, " more\n\n")
           }
         }
       }
