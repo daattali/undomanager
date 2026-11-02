@@ -109,7 +109,8 @@ ui <- fluidPage(
     id = "main",
     p(
       id = "intro",
-      "A pixel art editor built with ", code("{undomanager}"), ".",
+      "A pixel art editor built with ",
+      tags$a(href = "https://CRAN.R-project.org/package=undomanager", "{undomanager}"), ".",
       "The whole canvas is one matrix, and every stroke is one history item. ",
       "Draw something, then undo, redo, or jump to any point in the history."
     ),
